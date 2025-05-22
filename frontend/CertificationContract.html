@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Seafood Certification Interface</title>
+<script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+</head>
+<body>
+<h1>Seafood Certification DApp</h1>
+ 
+  <h2>Certify Seafood</h2>
+<input type="text" id="seafoodId" placeholder="Seafood ID (hex)">
+<input type="text" id="inspectorName" placeholder="Inspector Name">
+<input type="text" id="notes" placeholder="Notes">
+<label>
+    Passed:
+<input type="checkbox" id="passed">
+</label>
+<button onclick="certify()">Certify</button>
+ 
+  <h2>Get Certification</h2>
+<input type="text" id="queryId" placeholder="Seafood ID (hex)">
+<button onclick="getCertification()">Get Info</button>
+<pre id="certInfo"></pre>
+ 
+  <h2>All Certified IDs</h2>
+<button onclick="listAll()">List All</button>
+<ul id="certifiedList"></ul>
+ 
+  <script>
+    const contractAddress = "YOUR_CONTRACT_ADDRESS_HERE"; // Replace with your deployed contract address
+    const abi = [/* ABI goes here */];
+ 
+    let web3;
+    let contract;
+ 
+    window.addEventListener("load", async () => {
+      if (window.ethereum) {
+        web3 = new Web3(window.ethereum);
+        await window.ethereum.request({ method: "eth_requestAccounts" });
+        contract = new web3.eth.Contract(abi, contractAddress);
+      } else {
+        alert("Please install MetaMask to use this app.");
+      }
+    });
+ 
+    async function certify() {
+      const accounts = await web3.eth.getAccounts();
+      const seafoodId = document.getElementById("seafoodId").value;
+      const inspectorName = document.getElementById("inspectorName").value;
+      const notes = document.getElementById("notes").value;
+      const passed = document.getElementById("passed").checked;
+ 
+      try {
+        await contract.methods.certifySeafood(
+          seafoodId,
+          inspectorName,
+          notes,
+          passed
+        ).send({ from: accounts[0] });
+ 
+        alert("Seafood certified!");
+      } catch (err) {
+        alert("Error: " + err.message);
+      }
+    }
+ 
+    async function getCertification() {
+      const seafoodId = document.getElementById("queryId").value;
+      try {
+        const result = await contract.methods.getCertification(seafoodId).call();
+        document.getElementById("certInfo").innerText =
+          `Inspector: ${result[0]}\nNotes: ${result[1]}\nPassed: ${result[2]}\nTimestamp: ${result[3]}`;
+      } catch (err) {
+        alert("Error fetching certification: " + err.message);
+      }
+    }
+ 
+    async function listAll() {
+      try {
+        const ids = await contract.methods.getAllCertifiedIds().call();
+        const list = document.getElementById("certifiedList");
+        list.innerHTML = "";
+        ids.forEach(id => {
+          const li = document.createElement("li");
+          li.textContent = id;
+          list.appendChild(li);
+        });
+      } catch (err) {
+        alert("Error fetching certified IDs: " + err.message);
+      }
+    }
+</script>
+</body>
+</html>
