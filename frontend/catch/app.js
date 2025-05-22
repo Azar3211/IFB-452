@@ -235,23 +235,16 @@ window.onload = () => {
           "walletDisplay"
         ).innerText = `Connected: ${userAddress}`;
 
-        // ✅ Initialize contract now that signer is ready
-        const catchAddress = "0xABeFc21Ee6a892E1785bD140fDA1A7E0C3BD629f";
+        const catchAddress = "0x3d7C5d4eEB027b54Eb14Be7E5A6B4E41F76Ad86C";
         contract = new ethers.Contract(catchAddress, catchAbi, signer);
 
-        // load catches after wallet is connected
         loadCatches();
       } else {
         alert("MetaMask not detected.");
       }
     });
 
-  //   const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:7545");
-  //   const signer = new ethers.Wallet("0x01adc52c70cd4744877f30bb3acbe101dc73311eaffd59f11c05283991cd35f4", provider);
-  const catchAddress = "0x1a962bF9319aB9A7e576893d875E7EBEe935Df0B";
-  //const contract = new ethers.Contract(catchAddress, window.catchAbi, signer);
-
-  addDetail(); // one row to start
+  document.getElementById("addDetailBtn").addEventListener("click", addDetail);
 
   document.getElementById("catchForm").addEventListener("submit", submitCatch);
 
@@ -320,19 +313,10 @@ window.onload = () => {
         const [location, vessel, fisher, timestamp, verified, entryCount] =
           await contract.getCatchInfo(id);
 
-        let detailsHtml = "";
-        for (let i = 0; i < entryCount; i++) {
-          const [species, method, quantity] = await contract.getCatchDetail(
-            id,
-            i
-          );
-          detailsHtml += `<li>${quantity}x ${species} via ${method}</li>`;
-        }
-
         const catchCard = document.createElement("div");
         catchCard.className = "border p-4 mb-4 rounded";
         catchCard.innerHTML = `
-          <p><strong>ID:</strong> ${id}</p>
+          <p><strong>Catch ID:</strong> ${id}</p>
           <p><strong>Location:</strong> ${location}</p>
           <p><strong>Vessel:</strong> ${vessel}</p>
           <p><strong>Fisher:</strong> ${fisher}</p>
@@ -340,26 +324,57 @@ window.onload = () => {
             timestamp * 1000
           ).toLocaleString()}</p>
           <p><strong>Verified:</strong> ${verified ? "✅ Yes" : "❌ No"}</p>
-          <ul class="list-disc ml-5 mt-2">${detailsHtml}</ul>
         `;
 
         if (fisher.toLowerCase() === userAddress.toLowerCase()) {
           const button = document.createElement("button");
+          const detailButton = document.createElement("button");
+
+          detailButton.textContent = "Get Details";
           button.textContent = "✅ Verify";
+
+          detailButton.className =
+            "mt-2 px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700";
           button.className =
             "mt-2 px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700";
-          button.onclick = async () => {
+
+          detailButton.onclick = async () => {
             try {
-              const tx = await contract.verifyCatch(id, { gasLimit: 100000 });
-              await tx.wait();
-              alert("✅ Catch verified!");
-              loadCatches();
+              const [,,,,,entryCount] = await contract.getCatchInfo(id);
+              const detailList = document.createElement("ul");
+              detailList.className = "list-disc ml-5 mt-2";
+
+              for (let i = 0; i < entryCount; i++) {
+                const [species, method, quantity] =
+                  await contract.getCatchDetail(id, i);
+                const listItem = document.createElement("li");
+                listItem.textContent = `Caught ${quantity}x of ${species} via ${method}`;
+                detailList.appendChild(listItem);
+              }
+
+              catchCard.appendChild(detailList);
+              detailButton.remove(); // prevent multiple insertions
             } catch (err) {
-              console.error("Verification failed:", err);
-              alert("❌ Error verifying catch.");
+              console.error("Details retrieval failed:", err);
+              alert("❌ Error retrieving catch details.");
             }
           };
-          catchCard.appendChild(button);
+          catchCard.appendChild(detailButton);
+
+          if (!verified) {
+            button.onclick = async () => {
+              try {
+                const tx = await contract.verifyCatch(id, { gasLimit: 100000 });
+                await tx.wait();
+                alert("✅ Catch verified!");
+                loadCatches();
+              } catch (err) {
+                console.error("Verification failed:", err);
+                alert("❌ Error verifying catch.");
+              }
+            };
+            catchCard.appendChild(button);
+          }
         }
 
         list.appendChild(catchCard);
@@ -381,4 +396,5 @@ window.onload = () => {
       alert("❌ Error verifying catch.");
     }
   }
+
 };

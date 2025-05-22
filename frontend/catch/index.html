@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="styles.css">
 
     <script src="https://cdn.tailwindcss.com"></script>
+    <a href="/frontend/index.html">
+      <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        Back to Home
+      </button>
   </head>
   <body class="bg-gray-100 text-black">
     <div class="max-w-3xl mx-auto mt-8 p-6 bg-white shadow-md rounded">
@@ -38,11 +42,12 @@
         <div id="detailsContainer"></div>
         <button
           type="button"
-          onclick="addDetail()"
+          id="addDetailBtn"
           class="text-blue-600 font-semibold hover:underline"
         >
           + Add Detail
         </button>
+
 
         <button
           type="submit"
