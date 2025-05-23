@@ -108,7 +108,18 @@ contract RetailContract {
         lastSoldId = seafoodId;
         return true;
     }
-
+    function getCertificationTrace(bytes32 seafoodId)
+        public
+        view
+        returns (
+            string memory notes,
+            bool passed,
+            uint timestamp
+        )
+    {
+        (, string memory _notes, bool _passed, uint _timestamp) = certification.getCertification(seafoodId);
+        return (_notes, _passed, _timestamp);
+    }
     /// @notice Gets catch-level trace info
     function getCatchTrace(bytes32 seafoodId)
         public
@@ -209,7 +220,7 @@ contract RetailContract {
             sale.timestamp
         );
     }
-
+    
     /// @notice Lists all seafood IDs that have been sold
     function getAllSoldIds() public view returns (bytes32[] memory) {
         return soldIds;
