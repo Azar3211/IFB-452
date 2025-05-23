@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button
+      id="connectWalletBtn"
+      class="bg-yellow-400 text-black px-4 py-2 rounded"
+    >
+      🔗 Connect Wallet
+    </button>
+    <p id="walletDisplay" class="mt-2 text-sm text-gray-600"></p>
+    <!-- Are you a retailer or customer -->
+     <form id="recordSale">
+        <label>Something</label>
+        <input class="input" type="text" placeholder="retailer" />
+                <input class="input" type="text" placeholder="Location" />
+        <input class="input" type="text" placeholder="Notes" />
+          <button type="submit">Record Sale</button>
+
+     </form>
+     <button id="buttonss">Get All Sales</button>
+    <div id="qrcode"></div>
+    <button
+      id="generateQRCode"
+      class="bg-green-500 text-white px-4 py-2 rounded"
+    >
+      Generate QR Code
+    </button>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <!-- <script src="abi.js"></script> -->
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

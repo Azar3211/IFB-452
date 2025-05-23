@@ -7,13 +7,15 @@
     <link rel="stylesheet" href="styles.css">
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <a href="/frontend/index.html">
-      <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-        Back to Home
-      </button>
+
   </head>
+
   <body class="bg-gray-100 text-black">
     <div class="max-w-3xl mx-auto mt-8 p-6 bg-white shadow-md rounded">
+              <!-- <a href="/frontend/index.html">
+      <button class="bg-blue-600 text-white ">
+        Back to Home
+      </button> -->
       <h2 class="text-2xl font-bold mb-4">Log a Catch</h2>
       <button
         id="connectWalletBtn"
@@ -64,9 +66,10 @@
       <h2 class="text-xl font-semibold mb-4">All Catches</h2>
       <div id="catchList"></div>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <script src="abi.js"></script>
-    <script src="app.js"></script>
+    <script type="module" src="app.js"></script>
 
     <style>
       .input {

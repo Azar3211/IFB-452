@@ -1,3 +1,4 @@
+import catchByte from "./catchByte.js";
 window.onload = () => {
   const catchAbi = [
     {
@@ -234,10 +235,20 @@ window.onload = () => {
         document.getElementById(
           "walletDisplay"
         ).innerText = `Connected: ${userAddress}`;
+        let catchAddress = localStorage.getItem("catchAddress");
+        if (!catchAddress)
+        {
+        const factory = new ethers.ContractFactory(catchAbi, catchByte, signer);
+        const catchContract = await factory.deploy();
+        await catchContract.deployed();
+        const catchAddress = catchContract.address;
+        console.log("Catch contract deployed at:", catchAddress);
+        localStorage.setItem("catchAddress", catchAddress);
+        } else {
+          console.log("Catch contract already deployed at:", catchAddress);
+        }
 
-        const catchAddress = "0x3d7C5d4eEB027b54Eb14Be7E5A6B4E41F76Ad86C";
         contract = new ethers.Contract(catchAddress, catchAbi, signer);
-
         loadCatches();
       } else {
         alert("MetaMask not detected.");
@@ -396,5 +407,7 @@ window.onload = () => {
       alert("❌ Error verifying catch.");
     }
   }
+    // QR Code generation
+
 
 };
