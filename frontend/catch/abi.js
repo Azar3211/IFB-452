@@ -1,4 +1,4 @@
-window.catchAbi =  [
+const catchAbi =  [
 	{
 		"inputs": [
 			{
@@ -220,3 +220,5 @@ window.catchAbi =  [
 		"type": "function"
 	}
 ] ;
+
+export default catchAbi;
