@@ -323,6 +323,7 @@ window.onload = () => {
       for (const id of ids) {
         const [location, vessel, fisher, timestamp, verified, entryCount] =
           await contract.getCatchInfo(id);
+          localStorage.setItem("catchId", id);
 
         const catchCard = document.createElement("div");
         catchCard.className = "border p-4 mb-4 rounded";

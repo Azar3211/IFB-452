@@ -332,9 +332,9 @@ window.onload = () => {
           document.getElementById(
             "walletDisplay"
           ).innerText = `Connected: ${userAddress}`;
-          const catchAddress = "0x714450a43E145bD83a3C040eFFEC375394CAC16d"
-          const processingAddress = "0x35191808734e05792c3dF169b8eBe94eAaB06FF5"
-          const certificationAddress = "0x3b08990398a76442Ec43c3001e83cB8c70a00f7c"
+          const catchAddress = localStorage.getItem("catchAddress"); //,"0x714450a43E145bD83a3C040eFFEC375394CAC16d"
+          const processingAddress = localStorage.getItem("processingAddress")//,"0x35191808734e05792c3dF169b8eBe94eAaB06FF5"
+          const certificationAddress = localStorage.getItem("certAddress") //,"0x3b08990398a76442Ec43c3001e83cB8c70a00f7c"
           const factory = new ethers.ContractFactory(retailAbi, retailBytecode, signer);
           const retailContract = await factory.deploy(
             certificationAddress,
@@ -343,7 +343,6 @@ window.onload = () => {
           );
           await retailContract.deployed();
           const retailContractAddress = retailContract.address;
-          console.log("Retail contract deployed to:", retailContractAddress);
           localStorage.setItem("retailContractAddress", retailContractAddress);
       contract = new ethers.Contract(retailContractAddress, retailAbi, signer);
         } else {
