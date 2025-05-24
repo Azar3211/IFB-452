@@ -79,7 +79,7 @@ contract ProcessingLogisticsContract {
         string memory status,
         string memory batchNumber,
         string memory complianceNote,
-        string memory storageMethod // 🆕 NEW PARAMETER
+        string memory storageMethod
     ) public returns (uint index) {
         require(batches[seafoodId].timestamp > 0, "Batch not found");
 
@@ -129,7 +129,7 @@ contract ProcessingLogisticsContract {
             string memory status,
             string memory batchNumber,
             string memory complianceNote,
-            string memory storageMethod, // 🆕
+            string memory storageMethod, 
             uint timestamp
         )
     {
@@ -140,7 +140,7 @@ contract ProcessingLogisticsContract {
             d.status,
             d.batchNumber,
             d.complianceNote,
-            d.storageMethod, // 🆕 return it
+            d.storageMethod, 
             d.timestamp
         );
     }
