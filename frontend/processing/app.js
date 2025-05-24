@@ -366,6 +366,15 @@ window.onload = () => {
                 try{
                     const [location, vesselName,_, timestamp, verified, entryCount ] = 
                     await catchContract.getCatchInfo(id);
+                    let detailsofCatch = "";
+                    for (let i = 0; i < entryCount; i++) {
+                        try{
+                            const [species, method, quantity] =
+                            await catchContract.getCatchDetail(id, i);
+                            detailsofCatch += `<li>${quantity} of ${species} caught by ${method}</li>`;
+                        } catch (error) {
+                            console.error("Error fetching catch entry:", error);
+                        }}
                     const li = document.createElement("li");
                     li.innerHTML = `
                     <strong>Catch ID:</strong> ${id} <br>
@@ -373,7 +382,8 @@ window.onload = () => {
                     <strong>Vessel Name:</strong> ${vesselName} <br>    
                     <strong>Timestamp:</strong> ${new Date(timestamp * 1000).toLocaleString()} <br>
                     <strong>Verified:</strong> ${verified ? "Yes" : "No"} <br>
-                    <strong>Entry Count:</strong> ${entryCount} <br>
+                    <strong>Details of the Catch:</strong><br>
+                    <ul>${detailsofCatch}</ul>
                     `;
                     catchList.appendChild(li);
                 } catch (error) {
@@ -411,6 +421,7 @@ window.onload = () => {
       alert("Catch processed successfully!");
       getAllSeafoodIds();
       populateDropdowns();
+      location.reload();
     } catch (error) {
       alert("Error processing catch: " + error.message);
     }
