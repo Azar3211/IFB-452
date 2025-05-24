@@ -319,22 +319,24 @@ window.onload = () => {
   ];
 
   let provider, signer, userAddress, contract;
-
+  populateSeafoodDropdown();
   document
     .getElementById("connectWalletBtn")
     .addEventListener("click", async () => {
       console.log("Connecting to wallet...");
-        if (window.ethereum) {
-          provider = new ethers.providers.Web3Provider(window.ethereum);
-          await provider.send("eth_requestAccounts", []);
-          signer = provider.getSigner();
-          userAddress = await signer.getAddress();
-          document.getElementById(
-            "walletDisplay"
-          ).innerText = `Connected: ${userAddress}`;
-          const catchAddress = localStorage.getItem("catchAddress"); //,"0x714450a43E145bD83a3C040eFFEC375394CAC16d"
-          const processingAddress = localStorage.getItem("processingAddress")//,"0x35191808734e05792c3dF169b8eBe94eAaB06FF5"
-          const certificationAddress = localStorage.getItem("certAddress") //,"0x3b08990398a76442Ec43c3001e83cB8c70a00f7c"
+      if (window.ethereum) {
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        signer = provider.getSigner();
+        userAddress = await signer.getAddress();
+        document.getElementById(
+          "walletDisplay"
+        ).innerText = `Connected: ${userAddress}`;
+        let catchAddress = localStorage.getItem("catchAddress");
+        let processingAddress = localStorage.getItem("processingAddress")
+        let certificationAddress = localStorage.getItem("certificationAddress")
+        let retailContractAddress = localStorage.getItem("retailContractAddress");
+        if (!retailContractAddress) {
           const factory = new ethers.ContractFactory(retailAbi, retailBytecode, signer);
           const retailContract = await factory.deploy(
             certificationAddress,
@@ -344,26 +346,34 @@ window.onload = () => {
           await retailContract.deployed();
           const retailContractAddress = retailContract.address;
           localStorage.setItem("retailContractAddress", retailContractAddress);
-      contract = new ethers.Contract(retailContractAddress, retailAbi, signer);
         } else {
-          alert("MetaMask not detected.");
+          console.log("Using existing retail contract at:", retailContractAddress);
         }
+
+        contract = new ethers.Contract(retailContractAddress, retailAbi, signer);
+        populateSeafoodDropdown();
+      } else {
+        alert("MetaMask not detected.");
+      }
     });
 
+
+
+  //record sale form submission
   document.getElementById("recordSale").addEventListener("submit", recordSale);
   //function to record the sale  - retailers
   //function to return/view certificant, trace of catch, processing, and selling
   async function recordSale(data) {
     data.preventDefault();
     if (!contract) return alert("Please connect your wallet first.");
-    const seafoodId = localStorage.getItem("seafoodId");
-    if (!seafoodId) {
-      alert("No seafood ID found in local storage.");
+    const seafoodId = document.getElementById("seafoodSaleDropdown").value.trim();
+    const retailerName = document.getElementById("retailerName").value.trim();
+    const location = document.getElementById("location").value.trim();
+    const notes = document.getElementById("notes").value.trim();
+    if (!seafoodId || !retailerName || !location || !notes) {
+      alert("❌ All fields are required.");
       return;
     }
-    const retailerName = document.getElementById("retailerName").value;
-    const location = document.getElementById("location").value;
-    const notes = document.getElementById("notes").value;
     try {
       const transaction = await contract.recordSale(
         seafoodId,
@@ -375,26 +385,33 @@ window.onload = () => {
       await transaction.wait();
       alert("Sale recorded successfully!");
     } catch (error) {
-      alert("Error recording sale. Please try again.");
+      console.error("Error recording sale:", error)
+      alert("Error recording sale. Please try again. The seafood Most Likely has been rejected by the certification authority.");
     }
   }
-  document.getElementById("buttonss").addEventListener("click", () => {
-    const seafoodId = localStorage.getItem("seafoodId");
+  document.getElementById("getSaleInfo").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const seafoodId = document.getElementById("getSaleDropdown").value;
+    console.log("Fetching details for seafood ID:", seafoodId);
     getDetails(seafoodId);
+    console.log("Details fetched for seafood ID:", seafoodId);
   });
+
+
+  //gets the detaials
   async function getDetails(seafoodId) {
     //get the details.
     try {
       console.log("Seafood ID:", seafoodId);
 
-      const getChatchDetails = await contract.getCatchTrace(seafoodId);
+      const getCatchDetails = await contract.getCatchTrace(seafoodId);
       const getProcessingDetails = await contract.getProcessingTrace(seafoodId);
       const getCertificationDetails = await contract.getCertificationTrace(
         seafoodId
       );
       const getRetailDetails = await contract.getRetailSaleTrace(seafoodId);
       const catchDate = new Date(
-        getChatchDetails.timestamp * 1000
+        getCatchDetails.timestamp * 1000
       ).toLocaleString();
       const certDate = new Date(
         getCertificationDetails.timestamp * 1000
@@ -402,28 +419,27 @@ window.onload = () => {
       const saleDate = new Date(
         getRetailDetails.timestamp * 1000
       ).toLocaleString();
+      let certificationStatus = getCertificationDetails.passed ? "passed" : "failed";
+
       const information =
         "Here is the information of the seafood you bought: \n\n" +
-        `It was caught at ${getChatchDetails.location} on the vessel ${getChatchDetails.vessel} at ${catchDate}\nProcessing Details:\nPackaged by ${getProcessingDetails.packaging}, cleaned ${
-          getProcessingDetails.cleaningNotes
-        }.\nIts distribution status is ${
-        getProcessingDetails.lastDistributionStatus
-        }. It was located at ${
-        getProcessingDetails.lastDistributionLocation
-        } and stored at ${
-        getProcessingDetails.lastDistributionTemperature
-        }.\nIt ${getCertificationDetails.passed ? "Passed" : "Failed the certification"} the certification date on ${certDate} with the notes ${
-        getCertificationDetails.notes
-        }.\nLastly, it was sold by ${getRetailDetails.retailer} at ${
-        getRetailDetails.location
-        } on ${saleDate}.`.trim();
+        `It was caught at ${getCatchDetails.location} on the vessel ${getCatchDetails.vessel} at ${catchDate}\nProcessing Details:\nPackaged by ${getProcessingDetails.packaging}, cleaned ${getProcessingDetails.cleaningNotes
+          }.\nIts distribution status is ${getProcessingDetails.lastDistributionStatus
+          }. It was located at ${getProcessingDetails.lastDistributionLocation
+          } and stored at ${getProcessingDetails.lastDistributionTemperature
+          }.\nIt ${certificationStatus} the certification date on ${certDate} with the notes ${getCertificationDetails.notes
+          }.\nLastly, it was sold by ${getRetailDetails.retailer} at ${getRetailDetails.location
+          } on ${saleDate}.`.trim();
+      document.getElementById("saleInfoDisplay").innerHTML = information;
+
       generateQRCode(information);
     } catch (error) {
       console.error("Error fetching details:", error);
     }
   }
+
+  //generate QR code
   function generateQRCode(data) {
-    document.getElementById("generateQRCode").addEventListener("click", () => {
       const something = document.getElementById("qrcode");
       something.innerHTML = "";
       new QRCode(something, {
@@ -434,6 +450,30 @@ window.onload = () => {
         colorLight: "#ffffff",
         correctLevel: QRCode.CorrectLevel.H,
       });
+    };
+  
+  function populateSeafoodDropdown() {
+    const seafoodDropdown = document.getElementById("seafoodSaleDropdown");
+    const getSaleDropdown = document.getElementById("getSaleDropdown");
+    seafoodDropdown.innerHTML = "";
+    const seafoodIds = localStorage.getItem("seafoodIds");
+    [seafoodDropdown, getSaleDropdown].forEach(dropdown => {
+      if (dropdown) dropdown.innerHTML = "<option value=''>Select an ID</option>";
     });
+    if (seafoodIds) {
+      seafoodIds.split(",").forEach(id => {
+        const option1 = document.createElement("option");
+        option1.value = id;
+        option1.textContent = id;
+
+        const option2 = document.createElement("option");
+        option2.value = id;
+        option2.textContent = id;
+
+        seafoodDropdown.appendChild(option1);
+        getSaleDropdown.appendChild(option2);
+      });
+    }
   }
+
 };
