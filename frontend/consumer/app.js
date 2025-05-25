@@ -180,11 +180,9 @@ window.onload = () => {
           const option1 = document.createElement("option");
           option1.value = id;
           option1.textContent = userLabel;
-
           const option2 = document.createElement("option");
           option2.value = id;
           option2.textContent = userLabel;
-
           seafoodDropdown.appendChild(option1);
           getSaleDropdown.appendChild(option2);
         }

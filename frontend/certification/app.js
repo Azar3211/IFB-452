@@ -215,7 +215,6 @@ window.onload = () => {
             const spliting = seafoodId.split(",");
             spliting.forEach((id) => {
                 const userLabel = `${id.slice(60, 67)}`;
-
                 if (!certfiedSet.has(id.toLowerCase())) {
                     const option1 = document.createElement("option");
                     option1.value = id;
