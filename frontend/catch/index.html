@@ -1,86 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Catch Logger</title>
-    <link rel="stylesheet" href="styles.css">
 
-    <script src="https://cdn.tailwindcss.com"></script>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catch Logger</title>
+  <link rel="stylesheet" href="styles.css">
 
-  </head>
+  <script src="https://cdn.tailwindcss.com"></script>
 
-  <body class="bg-gray-100 text-black">
-        <button onclick="window.location.href='/frontend/'" class="bg-blue-500 text-white px-4 py-2 rounded mt-4">
-  🔙 Back to Home
-</button>
-    <div class="max-w-3xl mx-auto mt-8 p-6 bg-white shadow-md rounded">
-              <!-- <a href="/frontend/index.html">
+</head>
+
+<body class="bg-gray-100 text-black">
+  <button onclick="window.location.href='/frontend/'" class="bg-blue-500 text-white px-4 py-2 rounded mt-4">
+    🔙 Back to Home
+  </button>
+  <div class="max-w-3xl mx-auto mt-8 p-6 bg-white shadow-md rounded">
+    <!-- <a href="/frontend/index.html">
       <button class="bg-blue-600 text-white ">
         Back to Home
       </button> -->
-      <h2 class="text-2xl font-bold mb-4">Log a Catch</h2>
-      <button
-        id="connectWalletBtn"
-        class="bg-yellow-400 text-black px-4 py-2 rounded"
-      >
-        🔗 Connect Wallet
+    <h2 class="text-2xl font-bold mb-4">Log a Catch</h2>
+    <button id="connectWalletBtn" class="bg-yellow-400 text-black px-4 py-2 rounded">
+      🔗 Connect Wallet
+    </button>
+
+    <p id="walletDisplay" class="mt-2 text-sm text-gray-600"></p>
+
+    <form id="catchForm" class="space-y-4">
+      <input id="location" type="text" placeholder="Location" class="input" required />
+      <input id="vesselName" type="text" placeholder="Vessel Name" class="input" required />
+
+      <div id="detailsContainer"></div>
+      <button type="button" id="addDetailBtn" class="text-blue-600 font-semibold hover:underline">
+        + Add Detail
       </button>
-      <p id="walletDisplay" class="mt-2 text-sm text-gray-600"></p>
-
-      <form id="catchForm" class="space-y-4">
-        <input
-          id="location"
-          type="text"
-          placeholder="Location"
-          class="input"
-          required
-        />
-        <input
-          id="vesselName"
-          type="text"
-          placeholder="Vessel Name"
-          class="input"
-          required
-        />
-
-        <div id="detailsContainer"></div>
-        <button
-          type="button"
-          id="addDetailBtn"
-          class="text-blue-600 font-semibold hover:underline"
-        >
-          + Add Detail
-        </button>
 
 
-        <button
-          type="submit"
-          class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          Submit Catch
-        </button>
-      </form>
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        Submit Catch
+      </button>
 
-      <p id="successMessage" class="mt-2 font-medium"></p>
-    </div>
+    </form>
 
-    <div class="max-w-3xl mx-auto mt-8 p-6 bg-white shadow-md rounded">
-      <h2 class="text-xl font-semibold mb-4">All Catches</h2>
-      <div id="catchList"></div>
-    </div>
+    <p id="successMessage" class="mt-2 font-medium"></p>
+  </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-    <script src="abi.js"></script>
-    <script type="module" src="app.js"></script>
+  <div class="max-w-3xl mx-auto mt-8 p-6 bg-white shadow-md rounded">
+    <h2 class="text-xl font-semibold mb-4">All Catches</h2>
+    <div id="catchList"></div>
+  </div>
+<div id="loaderOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+  <div class="text-white text-xl font-semibold animate-pulse">
+    ⏳ Processing Information Please wait...
+  </div>
+</div>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script src="abi.js"></script>
+  <script type="module" src="app.js"></script>
 
-    <style>
-      .input {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-      }
-    </style>
-  </body>
+  <style>
+    .input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+  </style>
+</body>
+
 </html>

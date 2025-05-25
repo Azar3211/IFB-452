@@ -1,382 +1,81 @@
 import processingByteCode from "./processingByteCode.js";
 import catchAbi from "../catch/abi.js";
+import processingAbi from "./abi.js";
+import { showLoader, hideLoader } from "../helper/loading.js";
+import {connectWallet, getContractInstance} from "../helper/contractCreation.js"
+
+
 window.onload = () => {
-  const processingAbi = [
-    {
-      inputs: [
-        {
-          internalType: "bytes32",
-          name: "seafoodId",
-          type: "bytes32",
-        },
-        {
-          internalType: "string",
-          name: "location",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "temperature",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "status",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "batchNumber",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "complianceNote",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "storageMethod",
-          type: "string",
-        },
-      ],
-      name: "addLogisticsUpdate",
-      outputs: [
-        {
-          internalType: "uint256",
-          name: "index",
-          type: "uint256",
-        },
-      ],
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "bytes32",
-          name: "catchId",
-          type: "bytes32",
-        },
-        {
-          internalType: "string",
-          name: "packaging",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "cleaningNotes",
-          type: "string",
-        },
-        {
-          internalType: "bool",
-          name: "compliant",
-          type: "bool",
-        },
-        {
-          internalType: "uint256",
-          name: "paymentAmount",
-          type: "uint256",
-        },
-      ],
-      name: "processCatch",
-      outputs: [
-        {
-          internalType: "bytes32",
-          name: "seafoodId",
-          type: "bytes32",
-        },
-      ],
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "address",
-          name: "_catchContract",
-          type: "address",
-        },
-      ],
-      stateMutability: "nonpayable",
-      type: "constructor",
-    },
-    {
-      inputs: [
-        {
-          internalType: "bytes32",
-          name: "",
-          type: "bytes32",
-        },
-      ],
-      name: "batches",
-      outputs: [
-        {
-          internalType: "bytes32",
-          name: "catchId",
-          type: "bytes32",
-        },
-        {
-          internalType: "string",
-          name: "packaging",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "cleaningNotes",
-          type: "string",
-        },
-        {
-          internalType: "bool",
-          name: "compliant",
-          type: "bool",
-        },
-        {
-          internalType: "uint256",
-          name: "paymentAmount",
-          type: "uint256",
-        },
-        {
-          internalType: "uint256",
-          name: "timestamp",
-          type: "uint256",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [],
-      name: "catchContract",
-      outputs: [
-        {
-          internalType: "contract ICatchContract",
-          name: "",
-          type: "address",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [],
-      name: "getAllSeafoodIds",
-      outputs: [
-        {
-          internalType: "bytes32[]",
-          name: "",
-          type: "bytes32[]",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "bytes32",
-          name: "seafoodId",
-          type: "bytes32",
-        },
-        {
-          internalType: "uint256",
-          name: "index",
-          type: "uint256",
-        },
-      ],
-      name: "getLogisticsUpdate",
-      outputs: [
-        {
-          internalType: "string",
-          name: "location",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "temperature",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "status",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "batchNumber",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "complianceNote",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "storageMethod",
-          type: "string",
-        },
-        {
-          internalType: "uint256",
-          name: "timestamp",
-          type: "uint256",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "bytes32",
-          name: "seafoodId",
-          type: "bytes32",
-        },
-      ],
-      name: "getProcessingInfo",
-      outputs: [
-        {
-          internalType: "bytes32",
-          name: "catchId",
-          type: "bytes32",
-        },
-        {
-          internalType: "string",
-          name: "packaging",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "cleaningNotes",
-          type: "string",
-        },
-        {
-          internalType: "bool",
-          name: "compliant",
-          type: "bool",
-        },
-        {
-          internalType: "uint256",
-          name: "paymentAmount",
-          type: "uint256",
-        },
-        {
-          internalType: "uint256",
-          name: "timestamp",
-          type: "uint256",
-        },
-        {
-          internalType: "uint256",
-          name: "logisticsCount",
-          type: "uint256",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "uint256",
-          name: "",
-          type: "uint256",
-        },
-      ],
-      name: "seafoodIds",
-      outputs: [
-        {
-          internalType: "bytes32",
-          name: "",
-          type: "bytes32",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
-  ];
+
   let provider, signer, userAddress, contract;
   //deploy contract if it doesn't exist
-  populateDropdowns();
-
-
-
 
   document
     .getElementById("connectWalletBtn")
     .addEventListener("click", async () => {
-      if (window.ethereum) {
-        provider = new ethers.providers.Web3Provider(window.ethereum);
-        await provider.send("eth_requestAccounts", []);
-        signer = provider.getSigner();
-        userAddress = await signer.getAddress();
-        document.getElementById(
-          "walletDisplay"
-        ).innerText = `Connected: ${userAddress}`;
+      const wallet = await connectWallet();
+      provider = wallet.provider;
+      signer = wallet.signer;
+      userAddress = wallet.userAddress;
         let processingAddress = localStorage.getItem("processingAddress");
         let catchAddress = localStorage.getItem("catchAddress");
-        console.log("Processing address:", processingAddress);
         if (!processingAddress) {
-          console.log("Processing contract not deployed yet.");
+          showLoader();
           const factory = new ethers.ContractFactory(
             processingAbi,
             processingByteCode,
             signer
           );
           const processContract = await factory.deploy(catchAddress);
-
           await processContract.deployed();
-          console.log("processed");
-          const processingAddress = processContract.address;
+          processingAddress = processContract.address;
           localStorage.setItem("processingAddress", processingAddress);
+          hideLoader();
         } else {
-          console.log(
-            "Processing contract already deployed at:",
-            processingAddress
-          );
+          alert("Loading Contract. Please Wait:");
         }
-        contract = new ethers.Contract(
-          processingAddress,
-          processingAbi,
-          signer
-        );
-            document.getElementById("appContent").style.display = "block";
+        contract = getContractInstance(processingAddress, processingAbi, signer);
+        document.getElementById("appContent").style.display = "block";
         getCatchDetails(catchAddress, signer);
-      } else {
-        alert("MetaMask not detected.");
+        populateDropdowns();
+      } 
+    
+    );
+
+
+  //Function to get the catch details from the contract and display them in the catchList
+  async function getCatchDetails(catchAddy, signer) {
+    const catchList = document.getElementById("catchList");
+    catchList.innerHTML = ""; // Clear previous entries
+    try {
+      showLoader();
+      if (!catchAddy) { //If there is no catch address in local storage
+        alert("Catch contract address not found in local storage.");
+        return;
       }
-    });
-    //functiuon to get chatch details
-    async function getCatchDetails(catchAddy, signer) {
-        const catchList = document.getElementById("catchList");
-        catchList.innerHTML = ""; // Clear previous entries
-        try {
-            
-            if (!catchAddy) {
-                alert("Catch contract address not found in local storage.");
-                return;
+      const catchContract = new ethers.Contract(
+        catchAddy,
+        catchAbi,
+        signer
+      );
+      const catchId = localStorage.getItem("catchId"); // Retrieve the catch ID from local storage
+      const catchInfoExtract = catchId.split(","); // Split the catch ID string into an array
+      for (const id of catchInfoExtract) {
+        try { // For each catch ID, fetch the catch information
+          const [location, vesselName, _, timestamp, verified, entryCount] = 
+            await catchContract.getCatchInfo(id);
+          let detailsofCatch = "";
+          for (let i = 0; i < entryCount; i++) {
+            try {
+              const [species, method, quantity] =
+                await catchContract.getCatchDetail(id, i);
+              detailsofCatch += `<li>${quantity} of ${species} caught by ${method}</li>`;
+            } catch (error) {
+              console.error("Error fetching catch entry:", error);
             }
-            const catchContract = new ethers.Contract(
-                catchAddy,
-                catchAbi,
-                signer
-            );
-            const catchId = localStorage.getItem("catchId");
-            const catchInfoExtract = catchId.split(",");
-            for (const id of catchInfoExtract) {
-                try{
-                    const [location, vesselName,_, timestamp, verified, entryCount ] = 
-                    await catchContract.getCatchInfo(id);
-                    let detailsofCatch = "";
-                    for (let i = 0; i < entryCount; i++) {
-                        try{
-                            const [species, method, quantity] =
-                            await catchContract.getCatchDetail(id, i);
-                            detailsofCatch += `<li>${quantity} of ${species} caught by ${method}</li>`;
-                        } catch (error) {
-                            console.error("Error fetching catch entry:", error);
-                        }}
-                    const li = document.createElement("li");
-                    li.innerHTML = `
+          }
+          const li = document.createElement("li"); // Create a new list item for each catch and display the details
+          li.innerHTML = `
                     <strong>Catch ID:</strong> ${id} <br>
                     <strong>Location:</strong> ${location} <br>
                     <strong>Vessel Name:</strong> ${vesselName} <br>    
@@ -385,15 +84,20 @@ window.onload = () => {
                     <strong>Details of the Catch:</strong><br>
                     <ul>${detailsofCatch}</ul>
                     `;
-                    catchList.appendChild(li);
-                } catch (error) {
-                    alert("Error fetching catch info for ID " + id + ": " + error.message);
-        }}} catch (error) {
-            alert("Error fetching catch details: " + error.message);
+          catchList.appendChild(li); 
+        } catch (error) {
+          alert("Error fetching catch info for ID " + id + ": " + error.message);
         }
+      }
+    } catch (error) {
+      alert("Error fetching catch details: " + error.message);
+    } finally {
+      hideLoader();
     }
+  }
 
-  //function to process the catch
+  //Function to process the catch. It takes details from the form and processes it
+  //It then makes a transaction to process it.
   document
     .getElementById("processForm")
     .addEventListener("submit", processCatch);
@@ -409,6 +113,7 @@ window.onload = () => {
     const compliant = document.getElementById("compliant").checked;
     const paymentAmount = document.getElementById("paymentAmount").value;
     try {
+      showLoader();
       const transaction = await contract.processCatch(
         catchId,
         packaging,
@@ -419,14 +124,17 @@ window.onload = () => {
       );
       await transaction.wait();
       alert("Catch processed successfully!");
-      getAllSeafoodIds();
+      await getAllSeafoodIds();
       populateDropdowns();
-      location.reload();
     } catch (error) {
       alert("Error processing catch: " + error.message);
+    } finally {
+      hideLoader();
     }
   }
-  //function to get all seafood ids
+
+  
+  //function to get all seafood ids it then stores them in local storage
   async function getAllSeafoodIds() {
     try {
       const seafoodIds = await contract.getAllSeafoodIds();
@@ -435,11 +143,13 @@ window.onload = () => {
       alert("Error fetching seafood IDs: " + error.message);
     }
   }
-  
+
 
 
 
   //function to add logistics update
+  //It takes details from the form and adds a logistics update
+  //It then makes a transaction to add the logistics update.
   document
     .getElementById("addlogistics")
     .addEventListener("submit", logisticsUpdate);
@@ -453,6 +163,7 @@ window.onload = () => {
     const complianceNote = document.getElementById("complianceNote").value;
     const storageMethod = document.getElementById("storageMethod").value;
     try {
+      showLoader();
       const transaction = await contract.addLogisticsUpdate(
         seafoodId,
         location,
@@ -467,13 +178,17 @@ window.onload = () => {
       alert("Logistics update added successfully!");
     } catch (error) {
       alert("Error adding logistics update: " + error.message);
+    } finally {
+      hideLoader();
     }
   }
 
 
 
 
-  ///functyion to get the processing info
+  //Function to get processing info
+  //It takes the seafood ID from the dropdown and fetches the processing info
+  //It then displays the processing info in the processingInfoDisplay element.
   document
     .getElementById("getProcessingInfo")
     .addEventListener("submit", getProcessingInfo);
@@ -484,15 +199,15 @@ window.onload = () => {
     ).value;
 
     try {
+      showLoader();
       const processingInfo = await contract.getProcessingInfo(seafoodId);
-      console.log("Processing Info:", processingInfo);
       const infoDisplay = document.getElementById("processingInfoDisplay");
-      let logisticsInformation = `<p>NO logistics updates available.</p>`;
-      if (processingInfo.logisticsCount > 0) {
-        const lIndex = processingInfo.logisticsCount - 1;
+      let logisticsInformation = `<p>NO logistics updates available.</p>`; // Default message if no logistics updates are found
+      if (processingInfo.logisticsCount > 0) { // Check if there are logistics updates
+        const lIndex = processingInfo.logisticsCount - 1; // Get the latest logistics update
         const logisticsUpdate = await contract.getLogisticsUpdate(
           seafoodId,
-            lIndex)
+          lIndex)
         logisticsInformation = `
         <p>Logistics Update:</p>
         <p>Location: ${logisticsUpdate.location}</p>
@@ -502,11 +217,11 @@ window.onload = () => {
         <p>Compliance Note: ${logisticsUpdate.complianceNote}</p>
         <p>Storage Method: ${logisticsUpdate.storageMethod}</p>
         <p>Timestamp: ${new Date(
-            logisticsUpdate.timestamp * 1000
-            ).toLocaleString()}</p>
+          logisticsUpdate.timestamp * 1000
+        ).toLocaleString()}</p>
         `;
       }
-      if (processingInfo) {
+      if (processingInfo) { // Check if processing info is available
         infoDisplay.innerHTML = `
                 <h3>Processing Information for Seafood ID: ${seafoodId}</h3>
                 <p>Catch ID: ${processingInfo.catchId}</p>
@@ -515,8 +230,8 @@ window.onload = () => {
                 <p>Compliant: ${processingInfo.compliant}</p>
                 <p>Payment Amount: ${processingInfo.paymentAmount}</p>
                 <p>Timestamp: ${new Date(
-                  processingInfo.timestamp * 1000
-                ).toLocaleString()}</p>
+          processingInfo.timestamp * 1000
+        ).toLocaleString()}</p>
                 <p>Logistics Count: ${processingInfo.logisticsCount}</p>
                 ${logisticsInformation}
               `;
@@ -525,6 +240,8 @@ window.onload = () => {
       }
     } catch (error) {
       alert("Error getting processing info: " + error.message);
+    } finally {
+      hideLoader();
     }
   }
 
@@ -533,10 +250,12 @@ window.onload = () => {
 
 
   //function to update the logistics info
+  //it gets the values from the form and updates the logistics info
+  //For information that doesnt need to be updated, we use a dummy value
   document
-    .getElementById("updateLogistics")
+    .getElementById("updateLogistics") // This form is used to update logistics information
     .addEventListener("submit", updateLogistics);
-  async function updateLogistics(e) {
+  async function updateLogistics(e) { 
     e.preventDefault();
     const seafoodId = document.getElementById("seafoodDropdownLogistics").value;
     const location = document.getElementById("location").value;
@@ -544,10 +263,11 @@ window.onload = () => {
     const storageMethod = document.getElementById("storageMethod").value;
     const status = document.getElementById("status").value;
     try {
+      showLoader();
       const processingInfo = await contract.getProcessingInfo(seafoodId);
       const logisticsCount = processingInfo.logisticsCount;
-      const dummy = "-";
-      const transaction = await contract.addLogisticsUpdate(
+      const dummy = "-"; // Dummy value for fields that are not being updated
+      const transaction = await contract.addLogisticsUpdate( 
         seafoodId,
         location,
         temperature,
@@ -563,10 +283,11 @@ window.onload = () => {
         alert("No logistics updates available.");
         return;
       }
-      const logisticsUpdate = await contract.getLogisticsUpdate(
+      // Fetch the latest logistics update to display
+      const logisticsUpdate = await contract.getLogisticsUpdate( 
         seafoodId,
         logisticsCount
-      );
+      ); 
       document.getElementById("logisticsInfoDisplay").innerText = `
 Seafood ID: ${seafoodId}
 Location: ${logisticsUpdate.location}
@@ -577,6 +298,8 @@ Timestamp: ${new Date(logisticsUpdate.timestamp * 1000).toLocaleString()}
     `.trim();
     } catch (error) {
       alert("Error updating logistics: " + error.message);
+    } finally {
+      hideLoader();
     }
   }
 
@@ -584,49 +307,49 @@ Timestamp: ${new Date(logisticsUpdate.timestamp * 1000).toLocaleString()}
 
 
 
-  // Load seafood IDs and catch IDs from local storage into dropdowns
-function populateDropdowns() {  const seafoodDropdown = document.getElementById("seafoodDropdown");
-  const seafoodDropdownLogistics = document.getElementById(
-    "seafoodDropdownLogistics"
-  );
-  const seafoodDropdownProcessing = document.getElementById(
-    "seafoodDropdownProcessing"
-  );
-  const catchDropdown = document.getElementById("catchDropdown");
-  const seafoodStored = localStorage.getItem("seafoodIds");
-  const catchStored = localStorage.getItem("catchId");
-  //clear existing options
-  [seafoodDropdown, seafoodDropdownLogistics, seafoodDropdownProcessing, catchDropdown].forEach(dropdown => {
-    if (dropdown) dropdown.innerHTML = "<option value=''>Select an ID</option>";
-  });
-
-  if (seafoodStored) {
-    const spliting = seafoodStored.split(",");
-    spliting.forEach((id) => {
-      const option1 = document.createElement("option");
-      option1.value = id;
-      option1.textContent = id;
-
-      const option2 = document.createElement("option");
-      option2.value = id;
-      option2.textContent = id;
-
-      const option3 = document.createElement("option");
-      option3.value = id;
-      option3.textContent = id;
-
-      seafoodDropdown.appendChild(option1);
-      seafoodDropdownLogistics.appendChild(option2);
-      seafoodDropdownProcessing.appendChild(option3);
+  function populateDropdowns() {
+    const seafoodDropdown = document.getElementById("seafoodDropdown");
+    const seafoodDropdownLogistics = document.getElementById(
+      "seafoodDropdownLogistics"
+    );
+    const seafoodDropdownProcessing = document.getElementById(
+      "seafoodDropdownProcessing"
+    );
+    const catchDropdown = document.getElementById("catchDropdown");
+    const seafoodStored = localStorage.getItem("seafoodIds");
+    const catchStored = localStorage.getItem("catchId");
+    [seafoodDropdown, seafoodDropdownLogistics, seafoodDropdownProcessing, catchDropdown].forEach(dropdown => {
+      if (dropdown) dropdown.innerHTML = "<option value=''>Select an ID</option>";
     });
+
+    if (seafoodStored) {
+      const spliting = seafoodStored.split(",");
+      spliting.forEach((id) => {
+        const option1 = document.createElement("option");
+        option1.value = id;
+        option1.textContent = id;
+
+        const option2 = document.createElement("option");
+        option2.value = id;
+        option2.textContent = id;
+
+        const option3 = document.createElement("option");
+        option3.value = id;
+        option3.textContent = id;
+
+        seafoodDropdown.appendChild(option1);
+        seafoodDropdownLogistics.appendChild(option2);
+        seafoodDropdownProcessing.appendChild(option3);
+      });
+    }
+    if (catchStored) {
+      const spliting = catchStored.split(",");
+      spliting.forEach((id) => {
+        const option = document.createElement("option");
+        option.value = id;
+        option.textContent = id;
+        catchDropdown.appendChild(option);
+      });
+    }
   }
-  if (catchStored) {
-    const spliting = catchStored.split(",");
-    spliting.forEach((id) => {
-      const option = document.createElement("option");
-      option.value = id;
-      option.textContent = id;
-      catchDropdown.appendChild(option);
-    });
-  }}
 };

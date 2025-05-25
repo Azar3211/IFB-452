@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Document</title>
   <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body>
@@ -15,6 +16,7 @@
   <button id="connectWalletBtn" class="bg-yellow-400 text-black px-4 py-2 rounded">
     🔗 Connect Wallet
   </button>
+
   <p id="walletDisplay" class="mt-2 text-sm text-gray-600"></p>
   <!-- Are you a retailer or customer -->
   <form id="recordSale">
@@ -27,6 +29,7 @@
     <input class="input" type="text" placeholder="Location" id="location" />
     <input class="input" type="text" placeholder="Notes" id="notes" />
     <button type="submit">Record Sale</button>
+
   </form>
   <form id="getSaleInfo">
     <label for="getSaleDropdown">Select Seafood ID:</label>
@@ -34,10 +37,15 @@
       <option value="">Select one</option>
     </select>
     <button type="submit">Get Sale Info</button>
+
     <div id="saleInfoDisplay"></div>
   </form>
   <div id="qrcode"></div>
-
+<div id="loaderOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+  <div class="text-white text-xl font-semibold animate-pulse">
+    ⏳ Processing Information Please wait...
+  </div>
+</div>
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
   <script type="module" src="app.js"></script>

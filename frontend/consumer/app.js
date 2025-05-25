@@ -1,342 +1,31 @@
 //get the abi from the js file
 import retailBytecode from "./retailByteCode.js";
+import { showLoader, hideLoader } from "../helper/loading.js";
+import retailAbi from "./abi.js";
+import certAbi from "../certification/abi.js";
+import { connectWallet, getContractInstance } from "../helper/contractCreation.js"
+
 window.onload = () => {
-  const retailAbi = [
-    {
-      inputs: [
-        {
-          internalType: "bytes32",
-          name: "seafoodId",
-          type: "bytes32",
-        },
-        {
-          internalType: "string",
-          name: "retailerName",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "location",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "notes",
-          type: "string",
-        },
-      ],
-      name: "recordSale",
-      outputs: [
-        {
-          internalType: "bool",
-          name: "",
-          type: "bool",
-        },
-      ],
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "address",
-          name: "_certification",
-          type: "address",
-        },
-        {
-          internalType: "address",
-          name: "_catchContract",
-          type: "address",
-        },
-        {
-          internalType: "address",
-          name: "_processing",
-          type: "address",
-        },
-      ],
-      stateMutability: "nonpayable",
-      type: "constructor",
-    },
-    {
-      inputs: [],
-      name: "catchContract",
-      outputs: [
-        {
-          internalType: "contract ICatchContract",
-          name: "",
-          type: "address",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [],
-      name: "certification",
-      outputs: [
-        {
-          internalType: "contract ICertificationContract",
-          name: "",
-          type: "address",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [],
-      name: "getAllSoldIds",
-      outputs: [
-        {
-          internalType: "bytes32[]",
-          name: "",
-          type: "bytes32[]",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "bytes32",
-          name: "seafoodId",
-          type: "bytes32",
-        },
-      ],
-      name: "getCatchTrace",
-      outputs: [
-        {
-          internalType: "string",
-          name: "location",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "vessel",
-          type: "string",
-        },
-        {
-          internalType: "uint256",
-          name: "timestamp",
-          type: "uint256",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "bytes32",
-          name: "seafoodId",
-          type: "bytes32",
-        },
-      ],
-      name: "getCertificationTrace",
-      outputs: [
-        {
-          internalType: "string",
-          name: "notes",
-          type: "string",
-        },
-        {
-          internalType: "bool",
-          name: "passed",
-          type: "bool",
-        },
-        {
-          internalType: "uint256",
-          name: "timestamp",
-          type: "uint256",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "bytes32",
-          name: "seafoodId",
-          type: "bytes32",
-        },
-      ],
-      name: "getProcessingTrace",
-      outputs: [
-        {
-          internalType: "string",
-          name: "packaging",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "cleaningNotes",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "lastDistributionStatus",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "lastDistributionLocation",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "lastDistributionTemperature",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "lastDistributionBatch",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "lastDistributionNote",
-          type: "string",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "bytes32",
-          name: "seafoodId",
-          type: "bytes32",
-        },
-      ],
-      name: "getRetailSaleTrace",
-      outputs: [
-        {
-          internalType: "string",
-          name: "retailer",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "location",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "notes",
-          type: "string",
-        },
-        {
-          internalType: "uint256",
-          name: "timestamp",
-          type: "uint256",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [],
-      name: "lastSoldId",
-      outputs: [
-        {
-          internalType: "bytes32",
-          name: "",
-          type: "bytes32",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [],
-      name: "processing",
-      outputs: [
-        {
-          internalType: "contract IProcessingLogisticsContract",
-          name: "",
-          type: "address",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "bytes32",
-          name: "",
-          type: "bytes32",
-        },
-      ],
-      name: "sales",
-      outputs: [
-        {
-          internalType: "string",
-          name: "retailerName",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "location",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "notes",
-          type: "string",
-        },
-        {
-          internalType: "uint256",
-          name: "timestamp",
-          type: "uint256",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "uint256",
-          name: "",
-          type: "uint256",
-        },
-      ],
-      name: "soldIds",
-      outputs: [
-        {
-          internalType: "bytes32",
-          name: "",
-          type: "bytes32",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
-  ];
+
 
   let provider, signer, userAddress, contract;
   populateSeafoodDropdown();
+  //The connect wallet button gets the user's wallet and connects to the retail contract. If 
+  //the retail contract is not deployed, it deploys a new contract and stores the address in local storage.
+  //If the retail contract is already deployed, it retrieves the address from local storage and connects to it.
   document
     .getElementById("connectWalletBtn")
     .addEventListener("click", async () => {
-      console.log("Connecting to wallet...");
-      if (window.ethereum) {
-        provider = new ethers.providers.Web3Provider(window.ethereum);
-        await provider.send("eth_requestAccounts", []);
-        signer = provider.getSigner();
-        userAddress = await signer.getAddress();
-        document.getElementById(
-          "walletDisplay"
-        ).innerText = `Connected: ${userAddress}`;
+      const wallet = await connectWallet();
+      provider = wallet.provider;
+      signer = wallet.signer;
+      userAddress = wallet.userAddress;
         let catchAddress = localStorage.getItem("catchAddress");
         let processingAddress = localStorage.getItem("processingAddress")
         let certificationAddress = localStorage.getItem("certificationAddress")
         let retailContractAddress = localStorage.getItem("retailContractAddress");
         if (!retailContractAddress) {
+          showLoader();
           const factory = new ethers.ContractFactory(retailAbi, retailBytecode, signer);
           const retailContract = await factory.deploy(
             certificationAddress,
@@ -344,25 +33,22 @@ window.onload = () => {
             processingAddress
           );
           await retailContract.deployed();
-          const retailContractAddress = retailContract.address;
+          retailContractAddress = retailContract.address;
           localStorage.setItem("retailContractAddress", retailContractAddress);
+          hideLoader();
         } else {
-          console.log("Using existing retail contract at:", retailContractAddress);
+          alert("Loading Contract. Please Wait:");
         }
-
-        contract = new ethers.Contract(retailContractAddress, retailAbi, signer);
+        contract = getContractInstance(retailContractAddress, retailAbi, signer);
         populateSeafoodDropdown();
-      } else {
-        alert("MetaMask not detected.");
-      }
-    });
+      } 
+    );
 
 
 
-  //record sale form submission
+  //This records the sale of seafood by the retailer. It gets the seafood ID, retailer name, location, and notes from the form.
+  //It tells the user if the sale was successful or not. and if they filled all the fields.
   document.getElementById("recordSale").addEventListener("submit", recordSale);
-  //function to record the sale  - retailers
-  //function to return/view certificant, trace of catch, processing, and selling
   async function recordSale(data) {
     data.preventDefault();
     if (!contract) return alert("Please connect your wallet first.");
@@ -375,6 +61,7 @@ window.onload = () => {
       return;
     }
     try {
+      showLoader();
       const transaction = await contract.recordSale(
         seafoodId,
         retailerName,
@@ -387,6 +74,8 @@ window.onload = () => {
     } catch (error) {
       console.error("Error recording sale:", error)
       alert("Error recording sale. Please try again. The seafood Most Likely has been rejected by the certification authority.");
+    } finally {
+      hideLoader();
     }
   }
   document.getElementById("getSaleInfo").addEventListener("submit", (event) => {
@@ -398,10 +87,12 @@ window.onload = () => {
   });
 
 
-  //gets the detaials
+  //This function fetches the details of the seafood based on the seafood ID provided by the user.
+  //It recieves all of the information completed so that it can be displayed to the user.
   async function getDetails(seafoodId) {
     //get the details.
     try {
+      showLoader();
       console.log("Seafood ID:", seafoodId);
 
       const getCatchDetails = await contract.getCatchTrace(seafoodId);
@@ -435,24 +126,29 @@ window.onload = () => {
       generateQRCode(information);
     } catch (error) {
       console.error("Error fetching details:", error);
+    } finally {
+      hideLoader();
     }
   }
 
-  //generate QR code
+  //Generates a QR code for the given data and displays it in the HTML element with id "qrcode".
   function generateQRCode(data) {
-      const something = document.getElementById("qrcode");
-      something.innerHTML = "";
-      new QRCode(something, {
-        text: data,
-        width: 260,
-        height: 260,
-        colorDark: "#000000",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.H,
-      });
-    };
-  
-  function populateSeafoodDropdown() {
+    const something = document.getElementById("qrcode");
+    something.innerHTML = "";
+    new QRCode(something, {
+      text: data,
+      width: 260,
+      height: 260,
+      colorDark: "#000000",
+      colorLight: "#ffffff",
+      correctLevel: QRCode.CorrectLevel.H,
+    });
+  };
+
+  async function populateSeafoodDropdown() {
+    const certificationAddress = localStorage.getItem("certificationAddress");
+    const certificationContract = new ethers.Contract(certificationAddress, certAbi, provider);
+
     const seafoodDropdown = document.getElementById("seafoodSaleDropdown");
     const getSaleDropdown = document.getElementById("getSaleDropdown");
     seafoodDropdown.innerHTML = "";
@@ -460,19 +156,24 @@ window.onload = () => {
     [seafoodDropdown, getSaleDropdown].forEach(dropdown => {
       if (dropdown) dropdown.innerHTML = "<option value=''>Select an ID</option>";
     });
-    if (seafoodIds) {
-      seafoodIds.split(",").forEach(id => {
-        const option1 = document.createElement("option");
-        option1.value = id;
-        option1.textContent = id;
+    for (const id of seafoodIds.split(",")) {
+      try {
+        const [, , passed] = await certificationContract.getCertification(id);
+        if (passed) {
+          const option1 = document.createElement("option");
+          option1.value = id;
+          option1.textContent = id;
 
-        const option2 = document.createElement("option");
-        option2.value = id;
-        option2.textContent = id;
+          const option2 = document.createElement("option");
+          option2.value = id;
+          option2.textContent = id;
 
-        seafoodDropdown.appendChild(option1);
-        getSaleDropdown.appendChild(option2);
-      });
+          seafoodDropdown.appendChild(option1);
+          getSaleDropdown.appendChild(option2);
+        }
+      } catch (error) {
+        console.warn(`Seafood ID ${id} may not be certified yet.`);
+      }
     }
   }
 

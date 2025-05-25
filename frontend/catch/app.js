@@ -1,264 +1,44 @@
 import catchByte from "./catchByte.js";
+import { showLoader, hideLoader } from "../helper/loading.js";
+import catchAbi from "./abi.js";
+import {
+  connectWallet,
+  getContractInstance,
+} from "../helper/contractCreation.js";
 window.onload = () => {
-  const catchAbi = [
-    {
-      inputs: [
-        {
-          internalType: "string",
-          name: "location",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "vesselName",
-          type: "string",
-        },
-        {
-          internalType: "string[]",
-          name: "speciesList",
-          type: "string[]",
-        },
-        {
-          internalType: "string[]",
-          name: "methodList",
-          type: "string[]",
-        },
-        {
-          internalType: "uint256[]",
-          name: "quantityList",
-          type: "uint256[]",
-        },
-      ],
-      name: "logCatch",
-      outputs: [
-        {
-          internalType: "bytes32",
-          name: "catchId",
-          type: "bytes32",
-        },
-      ],
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "bytes32",
-          name: "catchId",
-          type: "bytes32",
-        },
-      ],
-      name: "verifyCatch",
-      outputs: [
-        {
-          internalType: "bool",
-          name: "",
-          type: "bool",
-        },
-      ],
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "bytes32",
-          name: "",
-          type: "bytes32",
-        },
-      ],
-      name: "catches",
-      outputs: [
-        {
-          internalType: "string",
-          name: "location",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "vesselName",
-          type: "string",
-        },
-        {
-          internalType: "address",
-          name: "fisher",
-          type: "address",
-        },
-        {
-          internalType: "uint256",
-          name: "timestamp",
-          type: "uint256",
-        },
-        {
-          internalType: "bool",
-          name: "verified",
-          type: "bool",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "uint256",
-          name: "",
-          type: "uint256",
-        },
-      ],
-      name: "catchIds",
-      outputs: [
-        {
-          internalType: "bytes32",
-          name: "",
-          type: "bytes32",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [],
-      name: "getAllCatchIds",
-      outputs: [
-        {
-          internalType: "bytes32[]",
-          name: "",
-          type: "bytes32[]",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "bytes32",
-          name: "catchId",
-          type: "bytes32",
-        },
-        {
-          internalType: "uint256",
-          name: "index",
-          type: "uint256",
-        },
-      ],
-      name: "getCatchDetail",
-      outputs: [
-        {
-          internalType: "string",
-          name: "species",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "method",
-          type: "string",
-        },
-        {
-          internalType: "uint256",
-          name: "quantity",
-          type: "uint256",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "bytes32",
-          name: "catchId",
-          type: "bytes32",
-        },
-      ],
-      name: "getCatchInfo",
-      outputs: [
-        {
-          internalType: "string",
-          name: "location",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "vesselName",
-          type: "string",
-        },
-        {
-          internalType: "address",
-          name: "fisher",
-          type: "address",
-        },
-        {
-          internalType: "uint256",
-          name: "timestamp",
-          type: "uint256",
-        },
-        {
-          internalType: "bool",
-          name: "verified",
-          type: "bool",
-        },
-        {
-          internalType: "uint256",
-          name: "entryCount",
-          type: "uint256",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [],
-      name: "lastCatchId",
-      outputs: [
-        {
-          internalType: "bytes32",
-          name: "",
-          type: "bytes32",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
-  ];
-  let provider, signer, userAddress, contract;
+  let provider, signer, userAddress, contract; // Declare contract variable
 
   document
-    .getElementById("connectWalletBtn")
+    .getElementById("connectWalletBtn") //Connect wallet button
     .addEventListener("click", async () => {
-      if (window.ethereum) {
-        provider = new ethers.providers.Web3Provider(window.ethereum);
-        await provider.send("eth_requestAccounts", []);
-        signer = provider.getSigner();
-        userAddress = await signer.getAddress();
-        document.getElementById(
-          "walletDisplay"
-        ).innerText = `Connected: ${userAddress}`;
-        let catchAddress = localStorage.getItem("catchAddress");
-        if (!catchAddress)
-        {
-        const factory = new ethers.ContractFactory(catchAbi, catchByte, signer);
-        const catchContract = await factory.deploy();
-        await catchContract.deployed();
-        const catchAddress = catchContract.address;
-        console.log("Catch contract deployed at:", catchAddress);
-        localStorage.setItem("catchAddress", catchAddress);
-        } else {
-          console.log("Catch contract already deployed at:", catchAddress);
-        }
-
-        contract = new ethers.Contract(catchAddress, catchAbi, signer);
-        loadCatches();
+      const wallet = await connectWallet(); //Calls connectWallet function to connect to the user's wallet
+      provider = wallet.provider; // Get the provider from the wallet
+      signer = wallet.signer; // Get the signer from the wallet
+      userAddress = wallet.userAddress; // Get the user's address from the wallet
+      let catchAddress = localStorage.getItem("catchAddress"); // Retrieve the catch contract address from local storage
+      if (!catchAddress) {
+        // If the catch contract address is not found in local storage then deploy a new contract
+        showLoader();
+        const factory = new ethers.ContractFactory(catchAbi, catchByte, signer); // Create a new contract factory using the catch ABI and bytecode
+        const catchContract = await factory.deploy(); // Deploy the catch contract
+        await catchContract.deployed(); // Wait for the contract to be deployed
+        catchAddress = catchContract.address; // Get the address of the deployed contract
+        localStorage.setItem("catchAddress", catchAddress); // Store the catch contract address in local storage
+        hideLoader(); // Hide the loader after the contract is deployed
       } else {
-        alert("MetaMask not detected.");
+        alert("Loading Contract. Please Wait:");
       }
+      if (!ethers.utils.isAddress(catchAddress)) {
+        alert("Invalid contract address.");
+        return;
+      }
+      contract = getContractInstance(catchAddress, catchAbi, signer); //Calls the getContractInstance function to get the contract instance using the catch contract address, ABI, and signer
+      loadCatches(); // Load existing catches from the contract
     });
 
+
   document.getElementById("addDetailBtn").addEventListener("click", addDetail);
-
   document.getElementById("catchForm").addEventListener("submit", submitCatch);
-
   function addDetail() {
     const div = document.createElement("div");
     div.className = "flex space-x-2 mb-2";
@@ -270,9 +50,9 @@ window.onload = () => {
     document.getElementById("detailsContainer").appendChild(div);
   }
 
-  async function submitCatch(e) {
-    e.preventDefault();
-    if (!contract) return alert("Please connect your wallet first.");
+  async function submitCatch(e) { // Function to submit the catch details
+    e.preventDefault();   // Prevent the default form submission behavior
+    if (!contract) return alert("Please connect your wallet first."); // Check if the contract is initialized
 
     const location = document.getElementById("location").value;
     const vesselName = document.getElementById("vesselName").value;
@@ -281,16 +61,26 @@ window.onload = () => {
     const methodList = [];
     const quantityList = [];
 
-    document.querySelectorAll("#detailsContainer > div").forEach((row) => {
-      const [speciesInput, methodInput, quantityInput] =
+    document.querySelectorAll("#detailsContainer > div").forEach((row) => { // Loop through each detail row in the form
+      const [speciesInput, methodInput, quantityInput] = 
         row.querySelectorAll("input");
-      speciesList.push(speciesInput.value);
-      methodList.push(methodInput.value);
-      quantityList.push(parseInt(quantityInput.value));
+      speciesList.push(speciesInput.value); // Get the species input value
+      methodList.push(methodInput.value); // Get the method input value
+      quantityList.push(parseInt(quantityInput.value)); // Get the quantity input value and convert it to an integer
     });
-
-    try {
-      const tx = await contract.logCatch(
+    if (
+      !location ||
+      !vesselName ||
+      speciesList.includes("") ||
+      methodList.includes("") ||
+      quantityList.includes(NaN)
+    ) {
+      alert("❌ Please fill in all fields correctly.");
+      return;
+    } // Validate that all required fields are filled in
+    try { // Try to log the catch details
+      showLoader();
+      const transaction = await contract.logCatch( // Call the logCatch function of the contract to log the catch details
         location,
         vesselName,
         speciesList,
@@ -298,32 +88,34 @@ window.onload = () => {
         quantityList,
         { gasLimit: 500000 }
       );
-      await tx.wait();
+      await transaction.wait(); // Wait for the transaction to be mined
 
       document.getElementById("successMessage").innerText =
         "✅ Catch logged successfully!";
       document.getElementById("catchForm").reset();
-      document.getElementById("detailsContainer").innerHTML = "";
-      addDetail();
-      loadCatches();
+      document.getElementById("detailsContainer").innerHTML = ""; // Clear the details container
+      addDetail(); // Add an initial detail row
+      loadCatches(); // Reload the catches to reflect the new catch
     } catch (err) {
       console.error(err);
       document.getElementById("successMessage").innerText =
-        "❌ Failed to log catch.";
+        "❌ Failed to log catch."; // Display an error message if the transaction fails
+    } finally {
+      hideLoader();
     }
   }
 
-  async function loadCatches() {
+  async function loadCatches() { // Function to load all catches from the contract
     const list = document.getElementById("catchList");
     list.innerHTML = "";
 
     try {
-      const ids = await contract.getAllCatchIds();
+      const ids = await contract.getAllCatchIds(); // Get all catch IDs from the contract
 
       for (const id of ids) {
         const [location, vessel, fisher, timestamp, verified, entryCount] =
-          await contract.getCatchInfo(id);
-          localStorage.setItem("catchId", id);
+          await contract.getCatchInfo(id); // Get catch info for each ID
+        localStorage.setItem("catchId", ids); // Store the catch ID in local storage
 
         const catchCard = document.createElement("div");
         catchCard.className = "border p-4 mb-4 rounded";
@@ -336,11 +128,11 @@ window.onload = () => {
             timestamp * 1000
           ).toLocaleString()}</p>
           <p><strong>Verified:</strong> ${verified ? "✅ Yes" : "❌ No"}</p>
-        `;
+        `; 
 
-        if (fisher.toLowerCase() === userAddress.toLowerCase()) {
+        if (fisher.toLowerCase() === userAddress.toLowerCase()) {  // Check if the current user is the fisher of the catch
           const button = document.createElement("button");
-          const detailButton = document.createElement("button");
+          const detailButton = document.createElement("button"); 
 
           detailButton.textContent = "Get Details";
           button.textContent = "✅ Verify";
@@ -352,19 +144,19 @@ window.onload = () => {
 
           detailButton.onclick = async () => {
             try {
-              const [,,,,,entryCount] = await contract.getCatchInfo(id);
+              const [, , , , , entryCount] = await contract.getCatchInfo(id); // Get the entry count for the catch
               const detailList = document.createElement("ul");
               detailList.className = "list-disc ml-5 mt-2";
 
-              for (let i = 0; i < entryCount; i++) {
-                const [species, method, quantity] =
+              for (let i = 0; i < entryCount; i++) { // Loop through each entry in the catch
+                const [species, method, quantity] = 
                   await contract.getCatchDetail(id, i);
-                const listItem = document.createElement("li");
+                const listItem = document.createElement("li"); // Create a list item for each entry
                 listItem.textContent = `Caught ${quantity}x of ${species} via ${method}`;
                 detailList.appendChild(listItem);
               }
 
-              catchCard.appendChild(detailList);
+              catchCard.appendChild(detailList); // Append the detail list to the catch card
               detailButton.remove(); // prevent multiple insertions
             } catch (err) {
               console.error("Details retrieval failed:", err);
@@ -373,16 +165,21 @@ window.onload = () => {
           };
           catchCard.appendChild(detailButton);
 
-          if (!verified) {
+          if (!verified) { // If the catch is not verified, show the verify button
             button.onclick = async () => {
               try {
-                const tx = await contract.verifyCatch(id, { gasLimit: 100000 });
-                await tx.wait();
+                showLoader();
+                const transaction = await contract.verifyCatch(id, {
+                  gasLimit: 100000,
+                }); // Call the verifyCatch function of the contract to verify the catch
+                await transaction.wait();
                 alert("✅ Catch verified!");
-                loadCatches();
+                loadCatches(); // Reload the catches to reflect the verification
               } catch (err) {
                 console.error("Verification failed:", err);
                 alert("❌ Error verifying catch.");
+              } finally {
+                hideLoader();
               }
             };
             catchCard.appendChild(button);
@@ -395,20 +192,4 @@ window.onload = () => {
       console.error("Failed to load catches:", err);
     }
   }
-
-  async function verifyCatch(id) {
-    try {
-      if (!contract) return alert("Please connect your wallet first.");
-      const tx = await contract.verifyCatch(id, { gasLimit: 100000 });
-      await tx.wait();
-      alert("✅ Catch verified!");
-      loadCatches();
-    } catch (err) {
-      console.error("Verification failed:", err);
-      alert("❌ Error verifying catch.");
-    }
-  }
-    // QR Code generation
-
-
 };

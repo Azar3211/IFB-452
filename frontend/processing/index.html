@@ -1,82 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Processing & Logistics </title>
-    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-        <button onclick="window.location.href='/frontend/'" class="bg-blue-500 text-white px-4 py-2 rounded mt-4">
-  🔙 Back to Home
-</button>
-    <button
-      id="connectWalletBtn"
-      class="bg-yellow-400 text-black px-4 py-2 rounded"
-    >
-      🔗 Connect Wallet
-    </button>
-    <p id="walletDisplay" class="mt-2 text-sm text-gray-600"></p>
-    <h1>Processing & Logistics</h1>
-    <div id="appContent" style="display: none">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Processing & Logistics </title>
+  <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+  <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+
+<body>
+  <button onclick="window.location.href='/frontend/'" class="bg-blue-500 text-white px-4 py-2 rounded mt-4">
+    🔙 Back to Home
+  </button>
+  <button id="connectWalletBtn" class="bg-yellow-400 text-black px-4 py-2 rounded">
+    🔗 Connect Wallet
+  </button>
+  <p id="walletDisplay" class="mt-2 text-sm text-gray-600"></p>
+  <h1>Processing & Logistics</h1>
+  <div id="appContent" style="display: none">
     <h2>Catch List</h2>
     <ul id="catchList"></ul>
-      <h2>Process Catch</h2>
-      <form id="processForm">
-        <select id="catchDropdown">
-          <option value="">Select Catch ID</option>
-        </select>
-        <input type="text" id="packaging" placeholder="Packaging type" />
-        <input type="text" id="cleaningNotes" placeholder="Cleaning Notes" />
-        <input type="number" id="paymentAmount" placeholder="Payment Amount" />
-        <label>
-          Compliant:
-          <input type="checkbox" id="compliant" />
-        </label>
-        <button type="submit">Process Catch</button>
-      </form>
+    <h2>Process Catch</h2>
+    <form id="processForm">
+      <select id="catchDropdown">
+        <option value="">Select Catch ID</option>
+      </select>
+      <input type="text" id="packaging" placeholder="Packaging type" />
+      <input type="text" id="cleaningNotes" placeholder="Cleaning Notes" />
+      <input type="number" id="paymentAmount" placeholder="Payment Amount" />
+      <label>
+        Compliant:
+        <input type="checkbox" id="compliant" />
+      </label>
+      <button type="submit">Process Catch</button>
+    </form>
 
-      <h2>Add Logistics</h2>
-      <form id="addlogistics">
-        <select id="seafoodDropdown">
-          <option value="">Select Seafood ID</option>
-        </select>
-        <input type="text" id="location" placeholder="Location" />
-        <input type="text" id="temperature" placeholder="Temperature" />
-        <input type="text" id="status" placeholder="Status" />
-        <input type="text" id="batchNumber" placeholder="Batch Number" />
-        <input type="text" id="complianceNote" placeholder="Compliance Note" />
-        <input type="text" id="storageMethod" placeholder="Storage Method" />
-        <button type="submit">Add Update</button>
-      </form>
+    <h2>Add Logistics</h2>
+    <form id="addlogistics">
+      <select id="seafoodDropdown">
+        <option value="">Select Seafood ID</option>
+      </select>
+      <input type="text" id="location" placeholder="Location" />
+      <input type="text" id="temperature" placeholder="Temperature" />
+      <input type="text" id="status" placeholder="Status" />
+      <input type="text" id="batchNumber" placeholder="Batch Number" />
+      <input type="text" id="complianceNote" placeholder="Compliance Note" />
+      <input type="text" id="storageMethod" placeholder="Storage Method" />
+      <button type="submit">Add Update</button>
+    </form>
 
-      <h2>Get Processing Info and Logistics Info</h2>
-      <form id="getProcessingInfo">
-        <select id="seafoodDropdownProcessing">
-          <option value="">Select Seafood ID</option>
-        </select>
-        <button type="submit" id="getProcessingInfoBtn">Get Info</button>
-        <div id="processingInfoDisplay"></div>
-      </form>
+    <h2>Get Processing Info and Logistics Info</h2>
+    <form id="getProcessingInfo">
+      <select id="seafoodDropdownProcessing">
+        <option value="">Select Seafood ID</option>
+      </select>
+      <button type="submit" id="getProcessingInfoBtn">Get Info</button>
+      <div id="processingInfoDisplay"></div>
+    </form>
 
-      <h2>Add Logistics Update</h2>
-      <form id="updateLogistics">
-        <select id="seafoodDropdownLogistics">
-          <option value="">Select Seafood ID</option>
-        </select>
-        <input type="text" id="location" placeholder="Location" />
-        <input type="text" id="temperature" placeholder="Temperature" />
-        <input type="text" id="status" placeholder="Status" />
-        <input type="text" id="batchNumber" placeholder="Batch Number" />
-        <input type="text" id="complianceNote" placeholder="Compliance Note" />
-        <input type="text" id="storageMethod" placeholder="Storage Method" />
-        <button type="submit">Add Update</button>
-      </form>
+    <h2>Add Logistics Update</h2>
+    <form id="updateLogistics">
+      <select id="seafoodDropdownLogistics">
+        <option value="">Select Seafood ID</option>
+      </select>
+      <input type="text" id="location" placeholder="Location" />
+      <input type="text" id="temperature" placeholder="Temperature" />
+      <input type="text" id="status" placeholder="Status" />
+      <input type="text" id="batchNumber" placeholder="Batch Number" />
+      <input type="text" id="complianceNote" placeholder="Compliance Note" />
+      <input type="text" id="storageMethod" placeholder="Storage Method" />
+      <button type="submit">Add Update</button>
+    </form>
+  </div>
+
+  <pre id="logisticsInfoDisplay"></pre>
+<div id="loaderOverlay" class="fixed inset-0 w-screen h-screen bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+    <div class="text-white text-xl font-semibold animate-pulse">
+      ⏳ Processing Information Please wait...
     </div>
-    <pre id="logisticsInfoDisplay"></pre>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script type="module" src="app.js"></script>
+</body>
 
-    <script type="module" src="app.js"></script>
-  </body>
 </html>
