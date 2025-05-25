@@ -9,7 +9,19 @@ window.onload = () => {
 
 
   let provider, signer, userAddress, contract;
-  populateSeafoodDropdown();
+  let userRole = null;
+  window.setRole = function (role) {
+
+    userRole = role;
+    document.getElementById("roleSelectScreen").style.display = "none";
+    document.getElementById("appContent").style.display = "block";
+    document.getElementById("retailer").style.display = "none";
+    if (role === "vendor") {
+      document.getElementById("retailer").style.display = "block";
+    }
+
+    populateSeafoodDropdown();
+  }
   //The connect wallet button gets the user's wallet and connects to the retail contract. If 
   //the retail contract is not deployed, it deploys a new contract and stores the address in local storage.
   //If the retail contract is already deployed, it retrieves the address from local storage and connects to it.
@@ -20,28 +32,28 @@ window.onload = () => {
       provider = wallet.provider;
       signer = wallet.signer;
       userAddress = wallet.userAddress;
-        let catchAddress = localStorage.getItem("catchAddress");
-        let processingAddress = localStorage.getItem("processingAddress")
-        let certificationAddress = localStorage.getItem("certificationAddress")
-        let retailContractAddress = localStorage.getItem("retailContractAddress");
-        if (!retailContractAddress) {
-          showLoader();
-          const factory = new ethers.ContractFactory(retailAbi, retailBytecode, signer);
-          const retailContract = await factory.deploy(
-            certificationAddress,
-            catchAddress,
-            processingAddress
-          );
-          await retailContract.deployed();
-          retailContractAddress = retailContract.address;
-          localStorage.setItem("retailContractAddress", retailContractAddress);
-          hideLoader();
-        } else {
-          alert("Loading Contract. Please Wait:");
-        }
-        contract = getContractInstance(retailContractAddress, retailAbi, signer);
-        populateSeafoodDropdown();
-      } 
+      let catchAddress = localStorage.getItem("catchAddress");
+      let processingAddress = localStorage.getItem("processingAddress")
+      let certificationAddress = localStorage.getItem("certificationAddress")
+      let retailContractAddress = localStorage.getItem("retailContractAddress");
+      if (!retailContractAddress) {
+        showLoader();
+        const factory = new ethers.ContractFactory(retailAbi, retailBytecode, signer);
+        const retailContract = await factory.deploy(
+          certificationAddress,
+          catchAddress,
+          processingAddress
+        );
+        await retailContract.deployed();
+        retailContractAddress = retailContract.address;
+        localStorage.setItem("retailContractAddress", retailContractAddress);
+        hideLoader();
+      } else {
+        alert("Loading Contract. Please Wait:");
+      }
+      contract = getContractInstance(retailContractAddress, retailAbi, signer);
+      populateSeafoodDropdown();
+    }
     );
 
 
@@ -113,14 +125,13 @@ window.onload = () => {
       let certificationStatus = getCertificationDetails.passed ? "passed" : "failed";
 
       const information =
-        "Here is the information of the seafood you bought: \n\n" +
-        `It was caught at ${getCatchDetails.location} on the vessel ${getCatchDetails.vessel} at ${catchDate}\nProcessing Details:\nPackaged by ${getProcessingDetails.packaging}, cleaned ${getProcessingDetails.cleaningNotes
-          }.\nIts distribution status is ${getProcessingDetails.lastDistributionStatus
-          }. It was located at ${getProcessingDetails.lastDistributionLocation
-          } and stored at ${getProcessingDetails.lastDistributionTemperature
-          }.\nIt ${certificationStatus} the certification date on ${certDate} with the notes ${getCertificationDetails.notes
-          }.\nLastly, it was sold by ${getRetailDetails.retailer} at ${getRetailDetails.location
-          } on ${saleDate}.`.trim();
+        "Here is the information of the seafood you bought:\n\n" +
+        `Caught at ${getCatchDetails.location} on the vessel ${getCatchDetails.vessel} (${catchDate}).\n` +
+        `Processed by ${getProcessingDetails.packaging}, cleaned (${getProcessingDetails.cleaningNotes}).\n` +
+        `Last seen at ${getProcessingDetails.lastDistributionLocation}, stored at ${getProcessingDetails.lastDistributionTemperature}, status: ${getProcessingDetails.lastDistributionStatus}.\n` +
+        `Certification: ${certificationStatus} on ${certDate} (Notes: ${getCertificationDetails.notes}).\n` +
+        `Sold by ${getRetailDetails.retailer} at ${getRetailDetails.location} on ${saleDate}.`
+          .trim();
       document.getElementById("saleInfoDisplay").innerHTML = information;
 
       generateQRCode(information);
@@ -153,7 +164,7 @@ window.onload = () => {
     const getSaleDropdown = document.getElementById("getSaleDropdown");
 
 
-      
+
     seafoodDropdown.innerHTML = "";
     const seafoodIds = localStorage.getItem("seafoodIds");
 
@@ -162,15 +173,17 @@ window.onload = () => {
     });
     for (const id of seafoodIds.split(",")) {
       try {
-        const [, , passed] = await certificationContract.getCertification(id);
+        const [, , passed, timestamp] = await certificationContract.getCertification(id);
         if (passed) {
+          const time = new Date(timestamp * 1000).toLocaleString();
+          const userLabel = `${id.slice(60, 67)}... | Certified: ${time}`
           const option1 = document.createElement("option");
           option1.value = id;
-          option1.textContent = id;
+          option1.textContent = userLabel;
 
           const option2 = document.createElement("option");
           option2.value = id;
-          option2.textContent = id;
+          option2.textContent = userLabel;
 
           seafoodDropdown.appendChild(option1);
           getSaleDropdown.appendChild(option2);

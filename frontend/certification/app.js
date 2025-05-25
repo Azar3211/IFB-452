@@ -207,24 +207,27 @@ window.onload = () => {
         );
         const certificationId = localStorage.getItem("certId");
         const seafoodId = localStorage.getItem("seafoodIds");
+
         if (getCertificateFormDropdown) getCertificateFormDropdown.innerHTML = "<option value=''>Select an ID</option>";
         if (getCertificateDropdown) getCertificateDropdown.innerHTML = "<option value=''>Select an ID</option>";
         if (seafoodId) {
             const certfiedSet = new Set(certificationId ? certificationId.split(",").map(id => id.toLowerCase()) : []);
             const spliting = seafoodId.split(",");
             spliting.forEach((id) => {
+                const userLabel = `${id.slice(60, 67)}`;
+
                 if (!certfiedSet.has(id.toLowerCase())) {
                     const option1 = document.createElement("option");
                     option1.value = id;
-                    option1.textContent = id;
+                    option1.textContent = userLabel;
                     getCertificateFormDropdown.appendChild(option1);
                 } // Skip if the ID is already certified
                 if (certfiedSet.has(id.toLowerCase())) {
                     const option2 = document.createElement("option");
                     option2.value = id;
-                    option2.textContent = id;
+                    option2.textContent = userLabel;
                     getCertificateDropdown.appendChild(option2);
-                } 
+                }
             });
         }
 

@@ -342,17 +342,19 @@ Timestamp: ${new Date(logisticsUpdate.timestamp * 1000).toLocaleString()}
     if (seafoodStored) {
       const spliting = seafoodStored.split(",");
       spliting.forEach((id) => {
+        const userLabel = `${id.slice(60, 67)}`;
+
         const option1 = document.createElement("option");
         option1.value = id;
-        option1.textContent = id;
+        option1.textContent = userLabel;
 
         const option2 = document.createElement("option");
         option2.value = id;
-        option2.textContent = id;
+        option2.textContent = userLabel;
 
         const option3 = document.createElement("option");
         option3.value = id;
-        option3.textContent = id;
+        option3.textContent = userLabel;
 
         seafoodDropdown.appendChild(option1);
         seafoodDropdownLogistics.appendChild(option2);
@@ -365,9 +367,11 @@ Timestamp: ${new Date(logisticsUpdate.timestamp * 1000).toLocaleString()}
       const spliting = catchStored.split(",");
       spliting.forEach((id) => {
         if (processedIds.includes(id.trim())) return;
+        const userLabel = `${id.slice(60, 67)}`;
+
         const option = document.createElement("option");
         option.value = id;
-        option.textContent = id;
+        option.textContent = userLabel;
         catchDropdown.appendChild(option);
       });
     }

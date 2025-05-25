@@ -10,42 +10,56 @@
 </head>
 
 <body>
-      <button onclick="window.location.href='/frontend/'" class="bg-blue-500 text-white px-4 py-2 rounded mt-4">
-  🔙 Back to Home
-</button>
+  <button onclick="window.location.href='/frontend/'" class="bg-blue-500 text-white px-4 py-2 rounded mt-4">
+    🔙 Back to Home
+  </button>
+
   <button id="connectWalletBtn" class="bg-yellow-400 text-black px-4 py-2 rounded">
     🔗 Connect Wallet
   </button>
-
+  <div id="roleSelectScreen">
+    <h2>Select User Role</h2>
+    <button class="bg-green-400 text-black px-4 py-2 rounded" onclick="setRole('vendor')">Vendor</button>
+    <button class="bg-green-400 text-black px-4 py-2 rounded" onclick="setRole('consumer')">Consumer</button>
+  </div>
   <p id="walletDisplay" class="mt-2 text-sm text-gray-600"></p>
   <!-- Are you a retailer or customer -->
-  <form id="recordSale">
-    <label>Sale Recorder - Vendors</label>
-    <label for="seafoodSaleDropdown">Select Seafood ID:</label>
-    <select id="seafoodSaleDropdown">
-      <option value="">Select one</option>
-    </select>
-    <input class="input" type="text" placeholder="retailerName" id="retailerName" />
-    <input class="input" type="text" placeholder="Location" id="location" />
-    <input class="input" type="text" placeholder="Notes" id="notes" />
-    <button type="submit">Record Sale</button>
+  <div id="appContent" style="display:none;">
 
-  </form>
-  <form id="getSaleInfo">
-    <label for="getSaleDropdown">Select Seafood ID:</label>
-    <select id="getSaleDropdown">
-      <option value="">Select one</option>
-    </select>
-    <button type="submit">Get Sale Info</button>
+    <div id="retailer">
+      <form id="recordSale">
+        <label>Sale Recorder - Vendors</label>
+        <label for="seafoodSaleDropdown">Select Seafood ID:</label>
+        <select id="seafoodSaleDropdown">
+          <option value="">Select one</option>
+        </select>
+        <input class="input" type="text" placeholder="retailerName" id="retailerName" />
+        <input class="input" type="text" placeholder="Location" id="location" />
+        <input class="input" type="text" placeholder="Notes" id="notes" />
+        <button type="submit">Record Sale</button>
 
-    <div id="saleInfoDisplay"></div>
-  </form>
-  <div id="qrcode"></div>
-<div id="loaderOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
-  <div class="text-white text-xl font-semibold animate-pulse">
-    ⏳ Processing Information Please wait...
+      </form>
+    </div>
+    <div id="customer">
+      <form id="getSaleInfo">
+        <label for="getSaleDropdown">Select Seafood ID:</label>
+        <select id="getSaleDropdown">
+          <option value="">Select one</option>
+        </select>
+        <button type="submit">Get Sale Info</button>
+
+        <div id="saleInfoDisplay"></div>
+      </form>
+
+      <div id="qrcode"></div>
+    </div>
+    <div id="loaderOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+      <div class="text-white text-xl font-semibold animate-pulse">
+        ⏳ Processing Information Please wait...
+      </div>
+    </div>
   </div>
-</div>
+
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
   <script type="module" src="app.js"></script>
