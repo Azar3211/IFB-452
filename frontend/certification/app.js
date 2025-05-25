@@ -2,7 +2,7 @@ import certificationByteCode from "./certificationByteCode.js";
 import processingAbi from "../processing/abi.js";
 import { showLoader, hideLoader } from "../helper/loading.js";
 import certAbi from "./abi.js";
-import {connectWallet, getContractInstance} from "../helper/contractCreation.js"
+import { connectWallet, getContractInstance } from "../helper/contractCreation.js"
 
 window.onload = () => {
     let provider, signer, userAddress, contract; // Declare contract variable
@@ -15,28 +15,28 @@ window.onload = () => {
             provider = wallet.provider;
             signer = wallet.signer;
             userAddress = wallet.userAddress;
-                let processingContractAddress =
-                    localStorage.getItem("processingAddress");
-                let certificationAddress = localStorage.getItem("certificationAddress");
-                if (!certificationAddress) { // If certification address is not found in local storage then deploy a new contract
-                    showLoader();
-                    const factory = new ethers.ContractFactory(
-                        certAbi,
-                        certificationByteCode,
-                        signer
-                    );
-                    const certContract = await factory.deploy(processingContractAddress);
-                    await certContract.deployed();
-                    certificationAddress = certContract.address;
-                    localStorage.setItem("certificationAddress", certificationAddress); // Store the certification contract address in local storage
-                    hideLoader();
-                } else {
-                    alert("Loading Contract. Please Wait:");
-                }
-                contract = getContractInstance(certificationAddress, certAbi, signer); // Calls the getContractInstance function to get the contract instance using the certification contract address, ABI, and signer
-                document.getElementById("appContent").style.display = "block"; // Show the app content after connecting the wallet
-                getProcessingDetails(processingContractAddress, signer) // Get processing details on page load
-            } 
+            let processingContractAddress =
+                localStorage.getItem("processingAddress");
+            let certificationAddress = localStorage.getItem("certificationAddress");
+            if (!certificationAddress) { // If certification address is not found in local storage then deploy a new contract
+                showLoader();
+                const factory = new ethers.ContractFactory(
+                    certAbi,
+                    certificationByteCode,
+                    signer
+                );
+                const certContract = await factory.deploy(processingContractAddress);
+                await certContract.deployed();
+                certificationAddress = certContract.address;
+                localStorage.setItem("certificationAddress", certificationAddress); // Store the certification contract address in local storage
+                hideLoader();
+            } else {
+                alert("Loading Contract. Please Wait:");
+            }
+            contract = getContractInstance(certificationAddress, certAbi, signer); // Calls the getContractInstance function to get the contract instance using the certification contract address, ABI, and signer
+            document.getElementById("appContent").style.display = "block"; // Show the app content after connecting the wallet
+            getProcessingDetails(processingContractAddress, signer) // Get processing details on page load
+        }
         );
 
 
@@ -45,11 +45,11 @@ window.onload = () => {
         const processingList = document.getElementById("waitingList") // Get the waiting list element
         processingList.innerHTML = "";
         try {
-            showLoader(); 
+            showLoader();
             if (!processingAddress) {
                 alert("Processing contract address not found.");
                 return;
-            } 
+            }
             const processingContract = new ethers.Contract( // Create a new contract instance for the processing contract
                 processingAddress,
                 processingAbi,
@@ -97,7 +97,7 @@ window.onload = () => {
                         ${logisticsInfo}
                     `;
                     processingList.appendChild(listItem); // Append the list item to the processing list
-                } catch (error) { 
+                } catch (error) {
                     const errorItem = document.createElement("li");
                     errorItem.textContent = `❌ Failed to fetch details for ${seafoodId}`;
                     processingList.appendChild(errorItem);
@@ -138,7 +138,7 @@ window.onload = () => {
             await transaction.wait();
             alert("Seafood certified successfully!");
             //get all certified ids
-            getAllCertifiedIds();
+            await getAllCertifiedIds();
             //populate fields
             populateDropdowns();
             const listItems = document.querySelectorAll("#waitingList li");
@@ -147,7 +147,6 @@ window.onload = () => {
                     li.remove();
                 }
             });
-            location.reload();
         } catch (error) {
             alert("Error certifying seafood: " + error.message);
         } finally {
@@ -208,32 +207,24 @@ window.onload = () => {
         );
         const certificationId = localStorage.getItem("certId");
         const seafoodId = localStorage.getItem("seafoodIds");
-        [
-            getCertificateFormDropdown,
-            getCertificateDropdown,
-
-        ].forEach((dropdown) => {
-            if (dropdown)
-                dropdown.innerHTML = "<option value=''>Select an ID</option>";
-        });
-
+        if (getCertificateFormDropdown) getCertificateFormDropdown.innerHTML = "<option value=''>Select an ID</option>";
+        if (getCertificateDropdown) getCertificateDropdown.innerHTML = "<option value=''>Select an ID</option>";
         if (seafoodId) {
+            const certfiedSet = new Set(certificationId ? certificationId.split(",").map(id => id.toLowerCase()) : []);
             const spliting = seafoodId.split(",");
             spliting.forEach((id) => {
-                const option1 = document.createElement("option");
-                option1.value = id;
-                option1.textContent = id;
-
-                const option2 = document.createElement("option");
-                option2.value = id;
-                option2.textContent = id;
-
-                const option3 = document.createElement("option");
-                option3.value = id;
-                option3.textContent = id;
-
-                getCertificateFormDropdown.appendChild(option1);
-                getCertificateDropdown.appendChild(option2);
+                if (!certfiedSet.has(id.toLowerCase())) {
+                    const option1 = document.createElement("option");
+                    option1.value = id;
+                    option1.textContent = id;
+                    getCertificateFormDropdown.appendChild(option1);
+                } // Skip if the ID is already certified
+                if (certfiedSet.has(id.toLowerCase())) {
+                    const option2 = document.createElement("option");
+                    option2.value = id;
+                    option2.textContent = id;
+                    getCertificateDropdown.appendChild(option2);
+                } 
             });
         }
 

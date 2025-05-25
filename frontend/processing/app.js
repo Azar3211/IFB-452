@@ -2,7 +2,7 @@ import processingByteCode from "./processingByteCode.js";
 import catchAbi from "../catch/abi.js";
 import processingAbi from "./abi.js";
 import { showLoader, hideLoader } from "../helper/loading.js";
-import {connectWallet, getContractInstance} from "../helper/contractCreation.js"
+import { connectWallet, getContractInstance } from "../helper/contractCreation.js"
 
 
 window.onload = () => {
@@ -17,29 +17,29 @@ window.onload = () => {
       provider = wallet.provider;
       signer = wallet.signer;
       userAddress = wallet.userAddress;
-        let processingAddress = localStorage.getItem("processingAddress");
-        let catchAddress = localStorage.getItem("catchAddress");
-        if (!processingAddress) {
-          showLoader();
-          const factory = new ethers.ContractFactory(
-            processingAbi,
-            processingByteCode,
-            signer
-          );
-          const processContract = await factory.deploy(catchAddress);
-          await processContract.deployed();
-          processingAddress = processContract.address;
-          localStorage.setItem("processingAddress", processingAddress);
-          hideLoader();
-        } else {
-          alert("Loading Contract. Please Wait:");
-        }
-        contract = getContractInstance(processingAddress, processingAbi, signer);
-        document.getElementById("appContent").style.display = "block";
-        getCatchDetails(catchAddress, signer);
-        populateDropdowns();
-      } 
-    
+      let processingAddress = localStorage.getItem("processingAddress");
+      let catchAddress = localStorage.getItem("catchAddress");
+      if (!processingAddress) {
+        showLoader();
+        const factory = new ethers.ContractFactory(
+          processingAbi,
+          processingByteCode,
+          signer
+        );
+        const processContract = await factory.deploy(catchAddress);
+        await processContract.deployed();
+        processingAddress = processContract.address;
+        localStorage.setItem("processingAddress", processingAddress);
+        hideLoader();
+      } else {
+        alert("Loading Contract. Please Wait:");
+      }
+      contract = getContractInstance(processingAddress, processingAbi, signer);
+      document.getElementById("appContent").style.display = "block";
+      getCatchDetails(catchAddress, signer);
+      populateDropdowns();
+    }
+
     );
 
 
@@ -59,10 +59,12 @@ window.onload = () => {
         signer
       );
       const catchId = localStorage.getItem("catchId"); // Retrieve the catch ID from local storage
-      const catchInfoExtract = catchId.split(","); // Split the catch ID string into an array
+      const processedIds = JSON.parse(localStorage.getItem("processedCatchIds")) || [];
+
+      const catchInfoExtract = catchId.split(",").filter(id => !processedIds.includes(id)); // Split the catch ID string into an array and filter out processed IDs
       for (const id of catchInfoExtract) {
         try { // For each catch ID, fetch the catch information
-          const [location, vesselName, _, timestamp, verified, entryCount] = 
+          const [location, vesselName, _, timestamp, verified, entryCount] =
             await catchContract.getCatchInfo(id);
           let detailsofCatch = "";
           for (let i = 0; i < entryCount; i++) {
@@ -84,7 +86,7 @@ window.onload = () => {
                     <strong>Details of the Catch:</strong><br>
                     <ul>${detailsofCatch}</ul>
                     `;
-          catchList.appendChild(li); 
+          catchList.appendChild(li);
         } catch (error) {
           alert("Error fetching catch info for ID " + id + ": " + error.message);
         }
@@ -124,6 +126,20 @@ window.onload = () => {
       );
       await transaction.wait();
       alert("Catch processed successfully!");
+      let processedIds = JSON.parse(localStorage.getItem("processedCatchIds")) || [];
+      const cleanId = catchId.trim();
+      if (!processedIds.includes(cleanId)) {
+        processedIds.push(cleanId);
+        localStorage.setItem("processedCatchIds", JSON.stringify(processedIds));
+
+      }
+      const catchDropdown = document.getElementById("catchDropdown");
+      const optionToRemove = catchDropdown.querySelector(`option[value="${cleanId}"]`);
+      if (optionToRemove) {
+        optionToRemove.remove();
+      }
+      await getCatchDetails(localStorage.getItem("catchAddress"), signer);
+
       await getAllSeafoodIds();
       populateDropdowns();
     } catch (error) {
@@ -133,7 +149,7 @@ window.onload = () => {
     }
   }
 
-  
+
   //function to get all seafood ids it then stores them in local storage
   async function getAllSeafoodIds() {
     try {
@@ -255,7 +271,7 @@ window.onload = () => {
   document
     .getElementById("updateLogistics") // This form is used to update logistics information
     .addEventListener("submit", updateLogistics);
-  async function updateLogistics(e) { 
+  async function updateLogistics(e) {
     e.preventDefault();
     const seafoodId = document.getElementById("seafoodDropdownLogistics").value;
     const location = document.getElementById("location").value;
@@ -267,7 +283,7 @@ window.onload = () => {
       const processingInfo = await contract.getProcessingInfo(seafoodId);
       const logisticsCount = processingInfo.logisticsCount;
       const dummy = "-"; // Dummy value for fields that are not being updated
-      const transaction = await contract.addLogisticsUpdate( 
+      const transaction = await contract.addLogisticsUpdate(
         seafoodId,
         location,
         temperature,
@@ -284,10 +300,10 @@ window.onload = () => {
         return;
       }
       // Fetch the latest logistics update to display
-      const logisticsUpdate = await contract.getLogisticsUpdate( 
+      const logisticsUpdate = await contract.getLogisticsUpdate(
         seafoodId,
         logisticsCount
-      ); 
+      );
       document.getElementById("logisticsInfoDisplay").innerText = `
 Seafood ID: ${seafoodId}
 Location: ${logisticsUpdate.location}
@@ -318,6 +334,7 @@ Timestamp: ${new Date(logisticsUpdate.timestamp * 1000).toLocaleString()}
     const catchDropdown = document.getElementById("catchDropdown");
     const seafoodStored = localStorage.getItem("seafoodIds");
     const catchStored = localStorage.getItem("catchId");
+
     [seafoodDropdown, seafoodDropdownLogistics, seafoodDropdownProcessing, catchDropdown].forEach(dropdown => {
       if (dropdown) dropdown.innerHTML = "<option value=''>Select an ID</option>";
     });
@@ -343,8 +360,11 @@ Timestamp: ${new Date(logisticsUpdate.timestamp * 1000).toLocaleString()}
       });
     }
     if (catchStored) {
+      const processedIds = JSON.parse(localStorage.getItem("processedCatchIds")) || [];
+
       const spliting = catchStored.split(",");
       spliting.forEach((id) => {
+        if (processedIds.includes(id.trim())) return;
         const option = document.createElement("option");
         option.value = id;
         option.textContent = id;

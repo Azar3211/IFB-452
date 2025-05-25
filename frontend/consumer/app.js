@@ -151,8 +151,12 @@ window.onload = () => {
 
     const seafoodDropdown = document.getElementById("seafoodSaleDropdown");
     const getSaleDropdown = document.getElementById("getSaleDropdown");
+
+
+      
     seafoodDropdown.innerHTML = "";
     const seafoodIds = localStorage.getItem("seafoodIds");
+
     [seafoodDropdown, getSaleDropdown].forEach(dropdown => {
       if (dropdown) dropdown.innerHTML = "<option value=''>Select an ID</option>";
     });
