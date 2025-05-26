@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-// Interfaces for connected contracts
+// Interfaces for connected contracts: Certification, Catch, and ProcessingLogistics
 
 interface ICertificationContract {
     function getCertification(bytes32 seafoodId)
@@ -11,7 +11,7 @@ interface ICertificationContract {
             string memory inspectorName,
             string memory notes,
             bool passed,
-            uint timestamp
+            uint256 timestamp
         );
 }
 
@@ -23,15 +23,19 @@ interface ICatchContract {
             string memory location,
             string memory vesselName,
             address fisher,
-            uint timestamp,
+            uint256 timestamp,
             bool verified,
-            uint entryCount
+            uint256 entryCount
         );
-        
-    function getCatchDetail(bytes32 catchId, uint index)
+
+    function getCatchDetail(bytes32 catchId, uint256 index)
         external
         view
-        returns (string memory species, string memory method, uint quantity);
+        returns (
+            string memory species,
+            string memory method,
+            uint256 quantity
+        );
 }
 
 interface IProcessingLogisticsContract {
@@ -43,12 +47,12 @@ interface IProcessingLogisticsContract {
             string memory packaging,
             string memory cleaningNotes,
             bool compliant,
-            uint paymentAmount,
-            uint timestamp,
-            uint logisticsCount
+            uint256 paymentAmount,
+            uint256 timestamp,
+            uint256 logisticsCount
         );
 
-    function getLogisticsUpdate(bytes32 seafoodId, uint index)
+    function getLogisticsUpdate(bytes32 seafoodId, uint256 index)
         external
         view
         returns (
@@ -57,11 +61,12 @@ interface IProcessingLogisticsContract {
             string memory status,
             string memory batchNumber,
             string memory complianceNote,
-            uint timestamp
+            uint256 timestamp
         );
 }
 
 contract RetailContract {
+    //RetailContract - Final step in the seafood traceability chain
     ICertificationContract public certification;
     ICatchContract public catchContract;
     IProcessingLogisticsContract public processing;
@@ -77,23 +82,26 @@ contract RetailContract {
     }
 
     struct Sale {
-        string retailerName;
-        string location;
-        string notes;
-        uint timestamp;
+        //Structure representing a sale record at the retailer level
+        string retailerName; // Retailer who sold the seafood
+        string location; // Retail location
+        string notes; // Additional notes or comments
+        uint256 timestamp; // Time of sale
     }
 
-    mapping(bytes32 => Sale) public sales;
-    bytes32[] public soldIds;
-    bytes32 public lastSoldId;
+    mapping(bytes32 => Sale) public sales; //Mapping seafoodId to sale
+    bytes32[] public soldIds; // List of all sold seafood IDs
+    bytes32 public lastSoldId; // Most recent sale ID
 
-    /// @notice Records a seafood sale (requires prior certification)
+    /// Records a seafood sale (requires prior certification)
     function recordSale(
+        //  Record the sale of a seafood batch after certification
         bytes32 seafoodId,
         string memory retailerName,
         string memory location,
         string memory notes
     ) public returns (bool) {
+        // Ensure the seafood has passed certification before sale
         (, , bool passed, ) = certification.getCertification(seafoodId);
         require(passed, "Seafood batch not certified");
 
@@ -108,35 +116,50 @@ contract RetailContract {
         lastSoldId = seafoodId;
         return true;
     }
-    function getCertificationTrace(bytes32 seafoodId)
+
+    function getCertificationTrace(
+        bytes32 seafoodId //Retrieves certification status and notes
+    )
         public
         view
         returns (
             string memory notes,
             bool passed,
-            uint timestamp
+            uint256 timestamp
         )
     {
-        (, string memory _notes, bool _passed, uint _timestamp) = certification.getCertification(seafoodId);
+        (
+            ,
+            string memory _notes,
+            bool _passed,
+            uint256 _timestamp
+        ) = certification.getCertification(seafoodId);
         return (_notes, _passed, _timestamp);
     }
-    /// @notice Gets catch-level trace info
+
+    //Retrieves original catch location, vessel, and time
     function getCatchTrace(bytes32 seafoodId)
         public
         view
         returns (
             string memory location,
             string memory vessel,
-            uint timestamp
+            uint256 timestamp
         )
     {
-        (bytes32 catchId, , , , , , ) = processing.getProcessingInfo(seafoodId);
-        (string memory loc, string memory vesselName, , uint catchTime, , ) =
-            catchContract.getCatchInfo(catchId);
+        (bytes32 catchId, , , , , , ) = processing.getProcessingInfo(seafoodId); //Get associated catchId from processing contract
+        (
+            string memory loc,
+            string memory vesselName,
+            ,
+            uint256 catchTime,
+            ,
+
+        ) = catchContract.getCatchInfo(catchId);
         return (loc, vesselName, catchTime);
     }
 
-    /// @notice Gets processing-level trace info
+    //Retrieves latest processing and logistics update info
     function getProcessingTrace(bytes32 seafoodId)
         public
         view
@@ -150,17 +173,21 @@ contract RetailContract {
             string memory lastDistributionNote
         )
     {
-        uint logisticsCount;
+        uint256 logisticsCount; // Declare variable to store number of logistics updates for the seafood batch
+
         {
-            string memory _pack;
+            string memory _pack; //Retrieve only cleaning and packaged info
             string memory _clean;
             (
                 ,
+                // Call processing contract to get processing info for the seafood ID
+
+                //Ignore
                 _pack,
-                _clean,
-                ,
-                ,
-                ,
+                _clean,  
+                , //Ignore
+                , //Ignore
+                , //Ignore
                 logisticsCount
             ) = processing.getProcessingInfo(seafoodId);
 
@@ -169,21 +196,17 @@ contract RetailContract {
         }
 
         if (logisticsCount > 0) {
+            // If logistics updates exist, retrieve the latest (most recent) entry
             {
                 string memory _loc;
                 string memory _temp;
                 string memory _status;
                 string memory _batch;
                 string memory _note;
-
-                (
-                    _loc,
-                    _temp,
-                    _status,
-                    _batch,
-                    _note,
-
-                ) = processing.getLogisticsUpdate(seafoodId, logisticsCount - 1);
+                // Get the most recent logistics update using the last index
+                (_loc, _temp, _status, _batch, _note, ) = processing
+                    .getLogisticsUpdate(seafoodId, logisticsCount - 1);
+                // Assign values to output variables
 
                 lastDistributionStatus = _status;
                 lastDistributionLocation = _loc;
@@ -192,6 +215,8 @@ contract RetailContract {
                 lastDistributionNote = _note;
             }
         } else {
+            // If there are no logistics updates, assign empty values
+
             lastDistributionStatus = "";
             lastDistributionLocation = "";
             lastDistributionTemperature = "";
@@ -200,8 +225,7 @@ contract RetailContract {
         }
     }
 
-
-    /// @notice Gets retail-level sale info
+    //Retrieve retail-level sale information
     function getRetailSaleTrace(bytes32 seafoodId)
         public
         view
@@ -209,19 +233,14 @@ contract RetailContract {
             string memory retailer,
             string memory location,
             string memory notes,
-            uint timestamp
+            uint256 timestamp
         )
     {
         Sale storage sale = sales[seafoodId];
-        return (
-            sale.retailerName,
-            sale.location,
-            sale.notes,
-            sale.timestamp
-        );
+        return (sale.retailerName, sale.location, sale.notes, sale.timestamp);
     }
-    
-    /// @notice Lists all seafood IDs that have been sold
+
+    //Lists all seafood IDs that have been sold
     function getAllSoldIds() public view returns (bytes32[] memory) {
         return soldIds;
     }

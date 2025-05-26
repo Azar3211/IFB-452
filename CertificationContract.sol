@@ -2,7 +2,9 @@
 pragma solidity ^0.8.0;
 
 interface IProcessingLogisticsContract {
-    function getProcessingInfo(bytes32 seafoodId)
+    function getProcessingInfo(
+        bytes32 seafoodId // A method that retrieves information about the processing and logistics history for a specific batch of seafood.
+    )
         external
         view
         returns (
@@ -10,12 +12,15 @@ interface IProcessingLogisticsContract {
             string memory packaging,
             string memory cleaningNotes,
             bool compliant,
-            uint paymentAmount,
-            uint timestamp,
-            uint logisticsCount
+            uint256 paymentAmount,
+            uint256 timestamp,
+            uint256 logisticsCount
         );
 
-    function getLogisticsUpdate(bytes32 seafoodId, uint index)
+    function getLogisticsUpdate(
+        bytes32 seafoodId,
+        uint256 index // A method that retrieves updates about the current status of a batch of seafood at any given point in time.
+    )
         external
         view
         returns (
@@ -24,11 +29,13 @@ interface IProcessingLogisticsContract {
             string memory status,
             string memory batchNumber,
             string memory complianceNote,
-            uint timestamp
+            uint256 timestamp
         );
 }
 
 contract CertificationContract {
+    // Define a new contract named "CertificationContract"
+
     IProcessingLogisticsContract public processingContract;
 
     constructor(address _processingContract) {
@@ -36,29 +43,33 @@ contract CertificationContract {
     }
 
     struct Certification {
-        bytes32 seafoodId;
+        // Define a structure (or class) for each certification record
+
+        bytes32 seafoodId; // Unique identifier of the batch being certified.
         string inspectorName;
         string notes;
-        bool passed;
-        uint timestamp;
+        bool passed; // Whether or not did it pass?
+        uint256 timestamp;
     }
 
-    mapping(bytes32 => Certification) public certifications;
+    mapping(bytes32 => Certification) public certifications; // A mapping (key-value pair system)
+
     bytes32[] public certifiedIds;
     bytes32 public lastCertifiedId;
 
-    /// @notice Certify a seafood batch after reviewing logistics and processing data
+    ///  Certify a seafood batch after reviewing logistics and processing data
     function certifySeafood(
         bytes32 seafoodId,
-        string memory inspectorName,
-        string memory notes,
+        string memory inspectorName, // Name of person who made this inspection and gave certificate to sea food
+        string memory notes, // Additional information about the certification process.
         bool passed
     ) public returns (bool) {
         // Validate seafoodId by checking it has a timestamp
-        (, , , , , uint processTimestamp, ) = processingContract.getProcessingInfo(seafoodId);
+        (, , , , , uint256 processTimestamp, ) = processingContract
+            .getProcessingInfo(seafoodId);
         require(processTimestamp > 0, "Invalid seafoodId");
 
-        certifications[seafoodId] = Certification({
+        certifications[seafoodId] = Certification({ // Save certification record
             seafoodId: seafoodId,
             inspectorName: inspectorName,
             notes: notes,
@@ -71,7 +82,7 @@ contract CertificationContract {
         return true;
     }
 
-    /// @notice Retrieve certification details
+    ///  Retrieves a certification record for a given seafood ID
     function getCertification(bytes32 seafoodId)
         public
         view
@@ -79,14 +90,14 @@ contract CertificationContract {
             string memory inspectorName,
             string memory notes,
             bool passed,
-            uint timestamp
+            uint256 timestamp
         )
     {
         Certification memory c = certifications[seafoodId];
         return (c.inspectorName, c.notes, c.passed, c.timestamp);
     }
 
-    /// @notice List all certified seafood IDs
+    /// Returns a list of all seafood IDs that have been certified
     function getAllCertifiedIds() public view returns (bytes32[] memory) {
         return certifiedIds;
     }
