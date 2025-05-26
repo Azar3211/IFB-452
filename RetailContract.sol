@@ -184,10 +184,10 @@ contract RetailContract {
 
                 //Ignore
                 _pack,
-                _clean, //Ignore //Ignore //Ignore
-                ,
-                ,
-                ,
+                _clean,  
+                , //Ignore
+                , //Ignore
+                , //Ignore
                 logisticsCount
             ) = processing.getProcessingInfo(seafoodId);
 
