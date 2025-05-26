@@ -13,8 +13,24 @@ Welcome to the Seafood Supply Chain Web Application! This application helps trac
 ### Installation
 
 1. Clone this repository to your local machine
-2. Open the `frontend` folder
-3. Open `index.html` in your web browser
+2. Open the project folder in a code editor like Visual Studio Code.
+3. Inside the editor, navigate to the frontend folder.
+4. Serve the project using one of the following methods (MetaMask requires HTTP, not file access)::
+   Option 1: Using VS Code + Live Server
+      Install the Live Server extension in VS Code.
+      Right-click on index.html and choose "Open with Live Server".
+      Your browser will open at http://127.0.0.1:5500/ or similar.
+      MetaMask will now work correctly. (to enable it follow step 2)
+    Option 2: Using Node.js and serve
+      Make sure you have Node.js installed.
+      Install the serve package globally (if not already):
+         npm install -g serve
+         cd frontend
+         serve .
+      Open your browser and go to the address shown (usually http://localhost:3000).
+
+⚠️ Important: Do not open index.html by double-clicking it or using file:/// — MetaMask will not connect unless the page is served over http:// or https://.
+
 
 ## How to Use the Application
 
