@@ -10,7 +10,7 @@
 
 </head>
 
-<body>
+<body >
   <button onclick="window.location.href='/frontend/'" class="bg-blue-500 text-white px-4 py-2 rounded mt-4">
     🔙 Back to Home
   </button>
@@ -20,9 +20,9 @@
   <p id="walletDisplay" class="mt-2 text-sm text-gray-600"></p>
   <h1>Processing & Logistics</h1>
   <div id="appContent" style="display: none">
-    <h2>Catch List</h2>
+    <h2 class="text-2xl font-semibold mb-4" >Catch List</h2>
     <ul id="catchList"></ul>
-    <h2>Process Catch</h2>
+    <h2 class="text-2xl font-semibold mb-4">Process Catch</h2>
     <form id="processForm">
       <select id="catchDropdown">
         <option value="">Select Catch ID</option>
@@ -37,7 +37,7 @@
       <button type="submit">Process Catch</button>
     </form>
 
-    <h2>Add Logistics</h2>
+    <h2 class="text-2xl font-semibold mb-4">Add Logistics</h2>
     <form id="addlogistics">
       <select id="seafoodDropdown">
         <option value="">Select Seafood ID</option>
@@ -51,7 +51,7 @@
       <button type="submit">Add Update</button>
     </form>
 
-    <h2>Get Processing Info and Logistics Info</h2>
+    <h2 class="text-2xl font-semibold mb-4">Get Processing Info and Logistics Info</h2>
     <form id="getProcessingInfo">
       <select id="seafoodDropdownProcessing">
         <option value="">Select Seafood ID</option>
@@ -60,7 +60,7 @@
       <div id="processingInfoDisplay"></div>
     </form>
 
-    <h2>Add Logistics Update</h2>
+    <h2 class="text-2xl font-semibold mb-4">Add Logistics Update</h2>
     <form id="updateLogistics">
       <select id="seafoodDropdownLogistics">
         <option value="">Select Seafood ID</option>
