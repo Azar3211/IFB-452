@@ -244,7 +244,7 @@ window.onload = () => {
                 <p>Packaging: ${processingInfo.packaging}</p>
                 <p>Cleaning Notes: ${processingInfo.cleaningNotes}</p>
                 <p>Compliant: ${processingInfo.compliant}</p>
-                <p>Payment Amount: ${processingInfo.paymentAmount}</p>
+                <p>Payment Amount: $${processingInfo.paymentAmount}</p>
                 <p>Timestamp: ${new Date(
           processingInfo.timestamp * 1000
         ).toLocaleString()}</p>
