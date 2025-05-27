@@ -1,31 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Seafood Certification Interface</title>
-    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
-    <link rel="stylesheet" href="styles.css" />
-    <script src="https://cdn.tailwindcss.com"></script>
-  </head>
-  <body>
-    <button onclick="window.location.href='/frontend/'" class="bg-blue-500 text-white px-4 py-2 rounded mt-4">
-  🔙 Back to Home
-</button>
-    <h1>Seafood Certification</h1>
-    <button
-      id="connectWalletBtn"
-      class="bg-yellow-400 text-black px-4 py-2 rounded"
-    >
-      🔗 Connect Wallet
-    </button>
-    
-    <p id="walletDisplay" class="mt-2 text-sm text-gray-600"></p>
-        <div id="appContent" style="display: none">
-        <div id="certificationWaiting">
-            <h2>Seafood waiting to be Certified</h2>
-            <ul id="waitingList"></ul>
-        </div>
-<h2 class="text-2xl font-semibold mb-4">Certify Seafood</h2>
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Seafood Certification Interface</title>
+  <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body>
+  <button onclick="window.location.href='/'" class="bg-blue-500 text-white px-4 py-2 rounded mt-4">
+    🔙 Back to Home
+  </button>
+  <h1>Seafood Certification</h1>
+  <button id="connectWalletBtn" class="bg-yellow-400 text-black px-4 py-2 rounded">
+    🔗 Connect Wallet
+  </button>
+
+  <p id="walletDisplay" class="mt-2 text-sm text-gray-600"></p>
+  <div id="appContent" style="display: none">
+    <div id="certificationWaiting">
+      <h2>Seafood waiting to be Certified</h2>
+      <ul id="waitingList"></ul>
+    </div>
+    <h2 class="text-2xl font-semibold mb-4">Certify Seafood</h2>
     <form id="certificationForm">
       <select id="getCertificateFormDropdown">
         <option value="">Select Seafood ID</option>
@@ -37,31 +36,33 @@
         <input type="checkbox" id="passed" />
       </label>
       <button type="submit">Certify</button>
-          <div id="loader" style="display: none;">Loading...</div>
+      <div id="loader" style="display: none;">Loading...</div>
 
     </form>
-    
+
     <h2 class="text-2xl font-semibold mb-4">Get Certification Details</h2>
     <form id="queryForm">
       <select id="getCertificateDropdown">
         <option value="">Select Seafood ID</option>
       </select>
       <button type="submit">Get Info</button>
-              <div id="certificationInfoDisplay"></div>
+      <div id="certificationInfoDisplay"></div>
 
       <pre id="certInfo"></pre>
     </form>
 
 
-    </div>
-    <div id="loaderOverlay" class="fixed inset-0 w-screen h-screen bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+  </div>
+  <div id="loaderOverlay"
+    class="fixed inset-0 w-screen h-screen bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
     <div class="text-white text-xl font-semibold animate-pulse">
       ⏳ Processing Information Please wait...
     </div>
   </div>
-        <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 
-    <script type="module" src="app.js"></script>
+  <script type="module" src="app.js"></script>
 
-  </body>
+</body>
+
 </html>
