@@ -128,6 +128,13 @@ window.onload = () => {
         const passed = document.getElementById("passed").checked;
         try {
             showLoader();
+            const processingAddress = localStorage.getItem("processingAddress");
+            const processingContract = new ethers.Contract(processingAddress, processingAbi, signer);
+            const [, , , compliant] = await processingContract.getProcessingInfo(seafoodId);
+        
+            if (!compliant) {
+              alert("⚠️ This seafood item is NOT marked as compliant in processing. Please review carefully before certifying.");
+            }
             const transaction = await contract.certifySeafood(
                 seafoodId,
                 inspectorName,
