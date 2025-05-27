@@ -116,6 +116,15 @@ window.onload = () => {
     const paymentAmount = document.getElementById("paymentAmount").value;
     try {
       showLoader();
+      const catchAddress = localStorage.getItem("catchAddress");
+      const catchContract = new ethers.Contract(catchAddress, catchAbi, signer);
+      const [, , , , verified] = await catchContract.getCatchInfo(catchId);
+  
+      if (!verified) {
+        alert("❌ This catch has not been verified. You cannot process it.");
+        return;
+      }
+
       const transaction = await contract.processCatch(
         catchId,
         packaging,
